@@ -342,6 +342,20 @@ table { border-collapse: collapse; width: 100%; }
 
 .nav-actions { display: flex; align-items: center; gap: 18px; }
 
+.nav-signin {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--steel);
+  transition: color var(--t-fast) var(--snap);
+}
+.nav-signin:hover { color: var(--carbon); }
+
+@media (max-width: 720px) {
+  .nav-signin { display: none; }
+}
+
 .menu-btn {
   display: none;
   padding: 10px 2px;
@@ -744,6 +758,7 @@ body.menu-open .nav { border-bottom-color: var(--rule-hard); }
   align-items: start;
   margin-top: clamp(40px, 5vw, 76px);
 }
+.studio > * { min-width: 0; }
 
 .sheet {
   position: relative;
@@ -797,6 +812,12 @@ body.menu-open .nav { border-bottom-color: var(--rule-hard); }
 
 /* Spec table: material specification / schedule */
 .spec { border-top: 1px solid var(--carbon); }
+/* Tables keep their columns and scroll sideways on narrow screens
+   instead of forcing the whole page wide. */
+@media (max-width: 700px) {
+  .tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tablewrap .spec { min-width: 540px; }
+}
 .spec thead th {
   font-family: var(--mono);
   font-size: 0.6rem;

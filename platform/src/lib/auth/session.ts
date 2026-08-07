@@ -1,48 +1,11 @@
 import "server-only";
 
-import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { db } from "@/lib/db";
 
 const COOKIE = "bsc_session";
 const TTL_MS = 1000 * 60 * 60 * 24 * 14;
-
-/** The raw token lives only in the cookie; the database stores its digest. */
-function digest(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}
-
-export async function createSession(userId: string, userAgent?: string) {
-  const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + TTL_MS);
-
-  await db.session.create({
-    data: { userId, tokenHash: digest(token), expiresAt, userAgent },
-  });
-  await db.user.update({
-    where: { id: userId },
-    data: { lastLoginAt: new Date() },
-  });
-
-  const store = await cookies();
-  store.set(COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    expires: expiresAt,
-  });
-}
-
-export async function destroySession() {
-  const store = await cookies();
-  const token = store.get(COOKIE)?.value;
-  if (token) {
-    await db.session.deleteMany({ where: { tokenHash: digest(token) } });
-  }
-  store.delete(COOKIE);
-}
+const DEMO_TOKEN = "demo-buildscope";
 
 export type SessionUser = {
   id: string;
@@ -61,39 +24,49 @@ export type SessionUser = {
   subProfileId: string | null;
 };
 
+/** Hardcoded demo identity — no DB required (Vercel-safe). */
+export const DEMO_USER: SessionUser = {
+  id: "demo-user-paul",
+  name: "Paul Chen",
+  email: "paul@ironline.test",
+  role: "GC_ADMIN",
+  title: "Owner",
+  orgId: "demo-org-horizon",
+  org: {
+    id: "demo-org-horizon",
+    name: "Horizon Builders GC",
+    type: "GC",
+    plan: "BUSINESS",
+    logoUrl: null,
+  },
+  subProfileId: null,
+};
+
+export async function createSession(_userId?: string) {
+  const expiresAt = new Date(Date.now() + TTL_MS);
+  const store = await cookies();
+  store.set(COOKIE, DEMO_TOKEN, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt,
+  });
+}
+
+export async function destroySession() {
+  const store = await cookies();
+  store.delete(COOKIE);
+}
+
 /**
- * Deduplicated per request, so layouts, pages, and server actions can each
- * ask for the current user without extra queries.
+ * Deduplicated per request. Cookie-only demo session — works on Vercel
+ * without SQLite / Prisma.
  */
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const store = await cookies();
   const token = store.get(COOKIE)?.value;
   if (!token) return null;
-
-  const session = await db.session.findUnique({
-    where: { tokenHash: digest(token) },
-    include: {
-      user: { include: { org: { include: { subProfile: true } } } },
-    },
-  });
-
-  if (!session || session.expiresAt < new Date()) return null;
-
-  const { user } = session;
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    title: user.title,
-    orgId: user.orgId,
-    org: {
-      id: user.org.id,
-      name: user.org.name,
-      type: user.org.type,
-      plan: user.org.plan,
-      logoUrl: user.org.logoUrl,
-    },
-    subProfileId: user.org.subProfile?.id ?? null,
-  };
+  if (token === DEMO_TOKEN || token.startsWith("demo")) return DEMO_USER;
+  return null;
 });

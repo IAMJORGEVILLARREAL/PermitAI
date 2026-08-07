@@ -2,10 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { db } from "@/lib/db";
-import { verifyPassword } from "@/lib/auth/password";
 import { createSession, destroySession } from "@/lib/auth/session";
-import { isGcRole } from "@/lib/domain";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -13,6 +10,8 @@ const schema = z.object({
 });
 
 export type LoginState = { error?: string };
+
+const DEMO_PASSWORD = "buildscope";
 
 export async function login(
   _prev: LoginState,
@@ -27,25 +26,13 @@ export async function login(
     return { error: parsed.error.issues[0]?.message ?? "Invalid credentials." };
   }
 
-  const user = await db.user.findUnique({ where: { email: parsed.data.email } });
-
-  // Same message either way — never reveal whether an account exists.
-  if (!user || !verifyPassword(parsed.data.password, user.passwordHash)) {
+  // Demo gate — any email + shared password. Role switching is in-app.
+  if (parsed.data.password !== DEMO_PASSWORD) {
     return { error: "Email or password is incorrect." };
   }
 
-  await createSession(user.id);
-  await db.auditEvent.create({
-    data: {
-      orgId: user.orgId,
-      userId: user.id,
-      action: "AUTH_LOGIN",
-      entityType: "User",
-      entityId: user.id,
-    },
-  });
-
-  redirect(isGcRole(user.role) ? "/projects" : "/work");
+  await createSession();
+  redirect("/projects");
 }
 
 export async function logout() {

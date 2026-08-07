@@ -21,9 +21,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BuildScope",
+  title: "BuildScope — Plans in. Contracts out.",
   description:
-    "Plans in. Quantified scopes, competitive bids, and source-linked permit compliance out.",
+    "BuildScope reads construction plans, posts quantified scopes to a verified subcontractor marketplace, and locks permit compliance into every award.",
+  openGraph: {
+    title: "BuildScope — Plans in. Contracts out.",
+    description:
+      "Quantified scopes, competitive bids from verified subcontractors, and source-linked permit compliance.",
+    images: [{ url: "/images/hero-site.jpg" }],
+  },
 };
 
 export default function RootLayout({

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
   <rect width="1200" height="800" fill="#f4f7fb"/>
   <rect x="40" y="40" width="1120" height="720" fill="none" stroke="#1e3a5f" stroke-width="3"/>
-  <text x="60" y="80" font-family="Georgia, serif" font-size="28" fill="#1e3a5f">Desert Ridge Medical Office — Shell (Sample)</text>
-  <text x="60" y="110" font-family="ui-sans-serif, system-ui" font-size="14" fill="#5b6b7c">BuildScope AI demo sheet - Phoenix, AZ - not a real construction document</text>
+  <text x="60" y="80" font-family="Georgia, serif" font-size="28" fill="#1e3a5f">Brickell Office TI - Level 2 Floor Plan (Sample)</text>
+  <text x="60" y="110" font-family="ui-sans-serif, system-ui" font-size="14" fill="#5b6b7c">BuildScope AI demo sheet - Miami, FL - not a real construction document</text>
 
   <rect x="120" y="160" width="420" height="280" fill="#fff" stroke="#2c5282" stroke-width="2"/>
   <text x="140" y="190" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">OPEN OFFICE</text>

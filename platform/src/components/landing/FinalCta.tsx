@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Reveal } from "./Reveal";
 
 export function FinalCta() {
@@ -14,7 +14,7 @@ export function FinalCta() {
       setMsg("Enter a valid work email.");
       return;
     }
-    setMsg("Received. We will follow up for Phoenix, Dallas, or Atlanta onboarding.");
+    setMsg("Received. We will follow up for Miami, Florida.");
     e.currentTarget.reset();
   }
 
@@ -56,8 +56,14 @@ export function FinalCta() {
               {msg}
             </p>
             <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-steel">
-              Onboarding in Phoenix, Dallas, Atlanta · other metros queue
+              Built for commercial work in Miami, Florida
             </p>
+            <a
+              href="/login"
+              className="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-concrete underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-white"
+            >
+              Already have demo access? Sign in
+            </a>
           </form>
         </Reveal>
       </div>

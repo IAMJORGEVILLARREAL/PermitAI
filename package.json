@@ -1,0 +1,10 @@
+{
+  "name": "permitai",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix platform",
+    "build": "npm run build --prefix platform",
+    "start": "npm run start --prefix platform",
+    "lint": "npm run lint --prefix platform"
+  }
+}

@@ -281,6 +281,33 @@ input[type="number"] {
   animation: machine-index 500ms steps(4, end) infinite;
 }
 
+/* Landing: scroll reveals + plan scan line */
+.landing-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-4) var(--ease-machine),
+    transform var(--dur-4) var(--ease-machine);
+}
+
+.landing-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes machine-scan-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(min(100vw, 640px));
+  }
+}
+
+.anim-scan-x {
+  animation: machine-scan-x 3.2s var(--ease-machine) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -288,6 +315,12 @@ input[type="number"] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .landing-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

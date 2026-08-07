@@ -30,21 +30,21 @@ export function Hero() {
             <SerialNumber label="DOC" value="BSC-LP-0001" />
             <span className="hidden h-3 w-px bg-hairline-strong sm:block" />
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-steel">
-              Phoenix · Dallas · Atlanta
+              Miami, Florida
             </span>
           </div>
         </Reveal>
 
         <Reveal delay={80}>
-          <p className="mt-10 font-display text-[15px] font-medium tracking-[-0.02em] text-carbon sm:text-[17px]">
+          <h1 className="mt-10 max-w-[12ch] font-display text-[clamp(56px,12vw,96px)] font-medium leading-[0.9] tracking-[-0.045em] text-carbon">
             BuildScope
-          </p>
+          </h1>
         </Reveal>
 
         <Reveal delay={140}>
-          <h1 className="mt-4 max-w-[14ch] font-display text-[clamp(44px,9vw,80px)] font-medium leading-[0.94] tracking-[-0.04em] text-carbon">
+          <p className="mt-5 max-w-[16ch] font-display text-[clamp(28px,5vw,40px)] font-medium leading-[1.05] tracking-[-0.03em] text-carbon">
             Plans in. Contracts out.
-          </h1>
+          </p>
         </Reveal>
 
         <Reveal delay={200}>

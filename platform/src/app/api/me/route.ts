@@ -1,9 +1,21 @@
-import { NextResponse } from "next/server";
-import { getMeApi } from "@/lib/api";
+import { NextRequest, NextResponse } from "next/server";
+import { getSubWork } from "@/lib/store";
+import { subs } from "@/lib/seed";
+import type { Role } from "@/lib/types";
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const role = url.searchParams.get("role") === "sub" ? "sub" : "gc";
-  const subEmail = url.searchParams.get("subEmail") ?? undefined;
-  return NextResponse.json(await getMeApi(role, subEmail));
+export async function GET(request: NextRequest) {
+  const role = (request.nextUrl.searchParams.get("role") ?? "gc") as Role;
+  const subId = request.nextUrl.searchParams.get("subId") ?? "sub-jose";
+
+  if (role === "sub") {
+    const sub = subs.find((s) => s.id === subId) ?? subs[0];
+    const work = getSubWork(sub.id);
+    return NextResponse.json({ role, sub, ...work });
+  }
+
+  return NextResponse.json({
+    role: "gc",
+    org: "Horizon Builders GC",
+    name: "Paul Chen",
+  });
 }

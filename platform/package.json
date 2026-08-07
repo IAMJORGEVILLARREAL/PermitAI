@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start",
+    "postinstall": "prisma generate || true",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.ts",

@@ -1,367 +1,567 @@
-Here is the fully completed, detailed PRD. Every section and placeholder from the previous drafts has been filled in, with a heavy focus on the business model, retention mechanics, and technical specifications that ensure recurring revenue.
+# PRD: BuildScope AI
+## The Intelligent Construction Scoping & Procurement Platform
 
----
-
-# PRD: PermitAI Platform – Compliance as a Service for Construction
-*The System of Record for Permit Compliance*
-
-| **Document Status** | Business Model Pivot v2.0 (Complete) |
+| **Document Status** | New Product v1.0 |
 | :--- | :--- |
 | **Product Manager** | Alex Chen |
 | **Lead Engineer** | Sarah Jenkins |
 | **Lead Designer** | Marcus Thorne |
-| **Regulatory Domain Expert** | David Okonkwo (Former City of Phoenix Plans Examiner) |
-| **Target Release** | MVP: February 15, 202X |
-| **Document Version** | 2.0 |
+| **Domain Expert** | David Okonkwo (Former Plans Examiner, City of Phoenix) |
+| **Target Launch** | MVP: Q2 202X |
+| **Document Version** | 1.0 |
 
 ---
 
 ## Table of Contents
-1. Executive Summary
-2. Strategic Business Model & Retention Architecture
-3. Problem Statement
-4. Target Users, Personas & User Stories
-5. Functional Requirements
-6. Non-Functional Requirements
-7. System Architecture & Technical Specifications
-8. Data Model & Privacy
-9. UX/UI Design Specifications
-10. Pricing, Packaging & Go-to-Market
-11. Success Metrics & KPIs
-12. Product Roadmap (MVP to V3)
-13. Risks, Assumptions & Mitigations
-14. Open Questions
-15. Appendix
+1. [Product Vision & Strategic Rationale](#1)
+2. [Competitive Landscape & White Space](#2)
+3. [Target Users & Personas](#3)
+4. [Business Model & Pricing](#4)
+5. [Core Workflow: The BuildScope Loop](#5)
+6. [Functional Requirements](#6)
+7. [Non-Functional Requirements](#7)
+8. [System Architecture & Technical Specifications](#8)
+9. [Data Model & Privacy](#9)
+10. [UX/UI Design Specifications](#10)
+11. [Go-to-Market Strategy](#11)
+12. [Success Metrics & KPIs](#12)
+13. [Product Roadmap](#13)
+14. [Risks, Assumptions & Mitigations](#14)
+15. [Glossary](#15)
 
 ---
 
-## 1. Executive Summary
-**PermitAI** transforms the costly, manual process of construction permitting into an AI-powered subscription platform. It is not a one-time permit lookup tool. It is a **Compliance as a Service** operating system that ingests project plans, maps them against a dynamic database of jurisdictional regulations, and creates a living, auditable compliance record.
+<a name="1"></a>
+## 1. Product Vision & Strategic Rationale
 
-**Core Value Proposition:** We don't just tell you what permits you need today. We lock in your project's regulatory baseline and actively monitor for code changes that threaten your schedule and budget. This shifts the product from a convenience to an un-cancelable risk management utility.
+### 1.1. Vision Statement
+BuildScope AI is the first platform that reads construction plans and turns them directly into qualified, competitive subcontractor contracts—with full regulatory compliance built in, not bolted on.
 
-**Target Outcome:** Become the embedded system of record for permit compliance in mid-sized US construction firms, achieving >110% Net Revenue Retention through expanding portfolio usage and subcontractor network effects.
+### 1.2. The Core Strategic Question
+> *"Why wouldn't a contractor just dump their plans into Claude or ChatGPT?"*
+
+### 1.3. The Answer: Three Irreducible Moat Layers
+A general-purpose AI chatbot can only operate at Layer 0. BuildScope AI is built on three stacked layers of defensibility that no chatbot can replicate.
+
+**Layer 1: Verifiable Ground Truth (The Trust Moat)**
+- **The Problem:** Chatbots hallucinate permits. They invent code citations. A single missed permit costs a contractor tens of thousands in fines and stop-work orders. No professional will bet their bond on unverifiable text.
+- **Our Solution:** A deterministic, version-controlled regulatory rules engine. Generative AI is strictly limited to unstructured plan note interpretation. Every permit output is backed by a direct, clickable link to the specific, adopted municipal code section. The output is an auditable artifact, not a plausible paragraph.
+
+**Layer 2: Structured Scope Decomposition (The Workflow Moat)**
+- **The Problem:** A chatbot gives a text summary. That summary must then be manually decomposed into bid packages, quantified, and distributed to subcontractors. The real work hasn't even started.
+- **Our Solution:** Our computer vision models are trained on construction symbology to output structured, quantified "Scope Packages." We don't just say "you need framing." We output "3,500 sq. ft. 4-inch slab, 200 linear ft. footings" and generate a ready-to-bid package with the relevant plan sheets attached.
+
+**Layer 3: The Closed-Loop Transaction Network (The Data Moat)**
+- **The Problem:** Chatbots have no memory, no network, and no transaction history. They don't know which subcontractor is licensed, insured, and has a 4.8-star safety rating across 20 projects.
+- **Our Solution:** A two-sided marketplace where AI-generated scopes are matched to pre-vetted subcontractors. When a contract is signed, the platform captures the bid, the performance, and the permit compliance in a closed loop. Every transaction makes our matching engine smarter. This proprietary performance graph becomes a data asset no general AI can access.
+
+### 1.4. The BuildScope Flywheel
+1. **AI decomposes plans** into structured, biddable scopes of work.
+2. **Vetted subcontractors** receive perfectly-matched bid invitations, saving them hours of manual takeoff.
+3. **Competitive bidding** drives better pricing for GCs and lower customer acquisition costs for subs.
+4. **Awarded contracts** trigger automated permit compliance tracking.
+5. **Closed-loop performance data** makes our matching algorithm and proprietary pricing intelligence more accurate.
+6. **More data** attracts more GCs, which attracts more subs. The flywheel accelerates.
 
 ---
 
-## 2. Strategic Business Model & Retention Architecture
+<a name="2"></a>
+## 2. Competitive Landscape & White Space
 
-### 2.1. The Business Model
-PermitAI is a B2B SaaS platform with a blended revenue model: recurring subscriptions (85% target revenue mix) and usage-based upsells (15%).
+### 2.1. Market Map
 
-| **Revenue Stream** | **Mechanism** | **Revenue Recognition** |
+| Category | Players | AI Plan Reading | Scope Decomp | Sub Marketplace | Permit Compliance | Transaction |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Incumbent PM Platforms** | Procore, Autodesk | ✗ | ✗ | ✓ (Directory) | ✗ | ✗ |
+| **AI Construction Startups** | Togal.AI, Trunk Tools, Doxel | ✓ (Partial) | ✗ | ✗ | ✗ | ✗ |
+| **Pure-Play Marketplaces** | PlanHub, ConstructConnect, BuildingConnected | ✗ | ✗ | ✓ (Bid board) | ✗ | ✗ |
+| **AI Permit Point Solutions** | Kooply, PermitFlow | ✓ (Text only) | ✗ | ✗ | ✓ (Basic) | ✗ |
+| **BuildScope AI** | **(Us)** | **✓** | **✓** | **✓** | **✓** | **✓** |
+
+### 2.2. The White Space
+No existing platform integrates all three pillars: **Machine Reading of Plans → Intelligent Subcontractor Matching → Regulatory Compliance Verification.** This is the defensible intersection we occupy.
+
+### 2.3. Competitive Threats to Monitor
+- **Togal.AI:** Exceptional computer vision for takeoff. Could attempt to build a marketplace layer.
+- **Procore:** Massive installed base and a nascent marketplace. If they acquire an AI startup and integrate deeply, they become formidable.
+- **Trunk Tools:** AI-native, well-funded. An "AI co-pilot for PMs" today; a pivot into procurement is plausible.
+
+**Our Moat Timeline:** We have approximately 18-24 months to build network liquidity before any of these players can credibly integrate all three pillars. Speed of execution is our primary defense.
+
+---
+
+<a name="3"></a>
+## 3. Target Users & Personas
+
+### 3.1. Dual-Sided Platform Personas
+
+**Side A: The General Contractor / Developer (The Buyer)**
+| | Paul, the GC Owner | Maria, the Compliance Director |
 | :--- | :--- | :--- |
-| **Annual Subscriptions** | Tiered platform access (Professional, Business, Enterprise). Billed annually with a 10% discount vs. monthly. | Recognized ratably over 12 months. |
-| **Project Credit Top-Ups** | For Professional plan, once 10 active projects are hit, power users can buy 5-project credit packs ($99) without upgrading. | Recognized as earned upon purchase (digital good). |
-| **Permit Expediting Service Fee** | White-glove concierge service: in-house permit analysts prepare and submit application packages. Priced per-permit submittal. | Recognized upon submittal completion. |
-| **Data Licensing (V3)** | Anonymized, aggregated permit requirement trends sold to building material suppliers and insurers. | TBD. |
+| **Company Size** | 10-50 employees | 100-500 employees |
+| **Core Pain** | "I waste days manually scoping plans and calling the same five subs. I don't know if I'm overpaying." | "I have 30 active projects. If one sub lets their license lapse or misses a permit, I'm liable. I have no real-time visibility." |
+| **Current Workflow** | Emails PDFs to known subs. Uses Excel for bid leveling. | Spreadsheets, Procore, and frantic phone calls. |
+| **Aha Moment** | Uploading plans on Monday, having 3 qualified, competitive bids by Wednesday from subs he's never met—and saving 7% on the framing package. | Seeing a single dashboard with every sub's license status, insurance expiry, and permit acknowledgement status across all projects, updated in real time. |
 
-### 2.2. The Retention Architecture (The "No One-Click Unsubscribe" System)
-These interconnected features create compounding value and high switching costs:
-
-1.  **Project Genome™ (Smart Defaults):** The platform learns a user's building typologies, preferred methods, and common jurisdictions. Project #2 is set up 60% faster than Project #1. Leaving means rebuilding this intelligence from scratch in Excel.
-2.  **Code Change Radar™ (Active Risk Alerting):** The un-cancelable feature. An active project's permits are linked to specific code sections. If a jurisdiction amends that code, the user is alerted to a potential compliance gap *before* an inspector flags it. This is a direct insurance policy against rework.
-3.  **Subcontractor Compliance Ledger:** The GC invites electrical, plumbing, and mechanical subs. The platform becomes the shared, auditable ledger proving "who is responsible for which permit." This creates a network effect; if the GC leaves, all their coordinated sub workflows collapse.
-4.  **Bid-Ready Intelligence Library:** Users save custom project templates (e.g., "3-story wood-frame apartment, Type V-A, Phoenix metro") that pre-load permit lists, timelines, and typical fees. This becomes proprietary institutional knowledge, not easily replicated.
-
----
-
-## 3. Problem Statement
-
-**Primary Problem:** Construction project delays and fines from incorrect or missing permits cost the industry over $5 billion annually. The root cause is fragmented, analog regulatory data that requires expensive specialty consultants to interpret for each discrete project.
-
-**The "One-and-Done" Trap:** Existing digital solutions are transactional project calculators. They fail because:
-- They do not retain project context, forcing users to re-enter identical data.
-- They are static, blind to the code changes that occur during a multi-year project.
-- They are single-player, ignoring the GC-to-subcontractor handoff that is the primary source of permit non-compliance.
-
-**PermitAI's Solution:** A platform that captures a project's full regulatory DNA once, monitors it actively, and connects the entire project team to a single compliance dashboard.
+**Side B: The Subcontractor (The Seller)**
+| | Jose, the Electrical Sub Owner |
+| :--- | :--- |
+| **Company Size** | 15-40 employees |
+| **Core Pain** | "I spend 20 hours a week doing manual takeoffs for bids I don't win. Finding good GCs to work with is pure word of mouth." |
+| **Current Workflow** | Receives email blasts with entire 100-page plan sets. Manually finds the electrical sheets. Manually counts fixtures. Bids blind. |
+| **Aha Moment** | Receiving a notification that says: "New Electrical Scope matched: 200A service upgrade, 45 branch circuits, 120 fixtures. Bid package pre-extracted. Estimated takeoff time saved: 4 hours." He bids in 30 minutes and wins a $45,000 contract. |
 
 ---
 
-## 4. Target Users, Personas & User Stories
+<a name="4"></a>
+## 4. Business Model & Pricing
 
-### 4.1. Core Personas
+### 4.1. Revenue Model Overview
+BuildScope AI generates revenue from both sides of the marketplace through a blended SaaS + Transaction Fee model. This creates aligned incentives and a revenue ceiling far higher than a pure SaaS tool.
 
-| Persona | Title | Company Size | Key Pain Point | Typical Software Stack | Motivation to Pay |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Paul, the Owner/PM** | President / Senior PM | 5-25 employees (Small GC) | Lost a $50k profit on a job due to a 6-week unplanned historic review delay. Personally handles permits. | BuilderTrend, Excel, Dropbox. | Predictability. Needs a system so he can delegate permit tracking and take a vacation. |
-| **Maria, the Compliance Manager** | Compliance & Safety Director | 50-200 employees (Mid-size GC) | Manages 30+ active projects. Nightmare is a sub's expired electric permit causing a site-wide Stop Work Order. | Procore, MS Project, Smartsheet. | Control & Audit Trail. Needs a single dashboard to prove compliance to insurers and owners. |
-| **Ray, the Permit Expeditor** | Independent Consultant | 1-2 employees | Clients send incomplete plans, expecting magic. Spends hours on municipal websites. Billing is messy. | Email, QuickBooks, PDF Viewer. | Speed & Professionalism. A tool that gives him a competitive edge and justifies his fees. |
+### 4.2. Detailed Pricing Tiers
 
-### 4.2. Detailed User Stories (By Role & Feature)
+**Side A: General Contractors & Developers**
 
-**For Paul, the GC Owner (Value: Speed to Bid)**
-- **US-01:** As Paul, I upload an RFP's preliminary site plan so I can generate a permit requirements list and estimated fee schedule for my bid in under 30 minutes, not 2 days.
-- **US-02:** As Paul, I want to re-use a "Scoop Template" from a previous similar project so I don't have to re-answer the same occupancy and building type questions.
-- **US-03:** As Paul, I want to receive a weekly digest email summarizing the compliance status of all my active projects so I can spot problems without logging in.
-
-**For Maria, the Compliance Manager (Value: Risk Mitigation)**
-- **US-04:** As Maria, I want to see a real-time "Project Health Score" (0-100) for each job, calculated by the number of permits obtained vs. required, so I can prioritize my morning calls.
-- **US-05:** As Maria, I want to receive an immediate push notification when the City of Austin updates a building code that impacts a structural permit on an active project so we can file a revision before the inspector arrives.
-- **US-06:** As Maria, I want to invite our electrical subcontractor to the platform and require them to digitally attest that they have pulled their trade permits, creating a time-stamped audit log.
-
-**For Ray, the Permit Expeditor (Value: Throughput & Billing)**
-- **US-07:** As Ray, I want a client-facing portal where my GC clients can upload plans directly into my workflow, so I stop chasing missing files via email.
-- **US-08:** As Ray, I want the platform to auto-populate standard municipal application forms with data extracted from the project profile, so I can cut 45 minutes of data entry per permit.
-- **US-09:** As Ray, I want to track my time spent on each permit submittal and generate a professional, detailed invoice directly from the platform.
-
----
-
-## 5. Functional Requirements
-
-### 5.1. Project Intake & Plan Processing Module
-- **FR-01: Multi-Format Ingestion:** System must accept PDF, DWG, DXF, RVT (Revit), IFC, JPG, PNG, and TIFF files. Users can upload files individually or in bulk (.zip).
-- **FR-02: Document Classification AI:** Upon upload, a fine-tuned computer vision model classifies sheets by type: Architectural Plan, Structural Plan, Civil Plan, MEP Plan, Title Sheet, Detail, Schedule, or Unrecognized. Confidence score displayed.
-- **FR-03: Optical Character Recognition (OCR):** Extract all text from vector and raster PDFs, including handwritten notes (with confidence flag). Extracted text is stored as searchable metadata linked to the sheet.
-- **FR-04: Named Entity Recognition (NER):** An NLP model extracts key construction scope entities from notes and schedules: "Relocate sprinkler main," "New 400A service," "Remove load-bearing wall," "New accessible ramp." These become "Scope Tags."
-- **FR-05: Symbol Detection:** Model identifies standard architectural symbols indicating: Fire alarm devices, plumbing fixtures, structural steel moment frames, and egress doors. Symbols are flagged as potential permit triggers.
-- **FR-06: Area & Dimension Extraction:** Auto-calculate total building area, floor areas, and identify if any dimension exceeds code thresholds (e.g., egress travel distance).
-- **FR-07: Geospatial Analysis:** Parse project address and automatically overlay parcel data with FEMA Flood Maps, US Fish & Wildlife Wetlands Inventory, National Register of Historic Places districts, and state-specific coastal zone boundaries.
-- **FR-08: Adaptive Project Wizard:** A smart questionnaire that adapts based on extracted data. Key questions: Project Valuation ($), Building Occupancy Classification (IBC Ch. 3), Construction Type (I-V), Work Type (New, Alteration L1/L2/L3, Addition, Change of Use), and whether work includes fire suppression, alarm, or structural modifications.
-
-### 5.2. Regulatory Intelligence & Reasoning Engine
-- **FR-09: Jurisdictional Rule Graph Database:** A Neo4j graph database storing permit triggers as nodes and conditions as edges. Example: [Node: Commercial Building Permit] –[TRIGGERED_IF]–> [Condition: Alteration Cost > $50,000 OR Structural Scope Tag Detected]. Each rule is versioned and source-linked.
-- **FR-10: Deterministic Rules Engine:** The final permit requirement list is generated by executing the project's extracted scope against the deterministic rule graph. Generative AI is strictly prohibited from generating the final permit recommendation. It is used solely for unstructured data interpretation (plan notes).
-- **FR-11: Citation Transparency:** Every permit recommendation must include: Permit Name, Issuing Authority, Triggering Scope Tag, Direct URL link to the adopted municipal code section, and last verified date.
-- **FR-12: Fee Estimator:** Based on jurisdiction fee schedules and project valuation, provide a calculated permit fee estimate with a "Low-High" range.
-- **FR-13: Timeline Estimator:** Based on jurisdiction-sourced data and historical user data (anonymized), estimate the review timeline (e.g., "Typical Building Permit: 3-4 weeks for in-depth review").
-
-### 5.3. Compliance Locker & Portfolio Management
-- **FR-14: Project Profile Save & Versioning:** All intake data, uploaded plans, extracted entities, and generated permit lists are saved as a versioned project record. Users can note "Bid Stage (v1)" vs "Permit Set (v2)" and re-run analysis.
-- **FR-15: Scope Template Library:** Users can save any project's wizard answers and scope tags as a named template (e.g., "Standard Interior TI – Office"). This template is available in the wizard for any new project.
-- **FR-16: Active Project Dashboard:** A Kanban-style board sorting projects by stage: Scoping, Permitting, Under Review, Approved, Construction, Closed.
-- **FR-17: Compliance Health Score:** A 0-100 score for each project. Calculation: (Number of "Obtained" permits + "Not Applicable") / (Total Required Permits). A permit is "Required" until a user marks it N/A with a required text justification.
-
-### 5.4. Code Change Radar™ (Proactive Monitoring)
-- **FR-18: Code Watch Subscriptions:** The system automatically subscribes a project to watch the code sections cited in its required permits. Users can manually add additional sections.
-- **FR-19: Regulatory Change Detection Engine:** A background process continuously monitors municipal websites, state code adoption portals, and legal databases for published amendments.
-- **FR-20: Impact Correlation Alert:** When a change is detected in a watched code section, the system correlates it against the specific Scope Tags of all active projects. An alert is issued: "Change Detected: City Council adopted IBC 2024. Your project at 123 Main St. has a structural trigger (Shear Wall) that requires re-evaluation. See Section 1705.3."
-
-### 5.5. Subcontractor Network & Trade Permits
-- **FR-21: Role-Based Access Control (RBAC):** Project Owner (Full Access), Collaborator (Internal PM), Subcontractor (Trade-Specific View Only), Read-Only (Client/Owner).
-- **FR-22: Trade Permit Assignment:** The Project Owner designates a Subcontractor user as "Responsible Party" for specific trade permits (E-01 Electrical, P-01 Plumbing).
-- **FR-23: Digital Acknowledgement:** The designated Subcontractor receives an in-app notification and email. They must view their assigned permit and click "Acknowledged & In Progress." This action is logged in the immutable audit trail with a timestamp and user ID.
-- **FR-24: Subcontractor Bulk View:** Subcontractors logging in see a simplified dashboard of *only* their assigned permits across all projects they've been invited to.
-
----
-
-## 6. Non-Functional Requirements
-
-- **NFR-01: Explainability (Grounding):** Every AI-generated extraction (e.g., "Potential Structural Wall") must display its source evidence, such as a bounding box on the plan sheet. "Why this permit?" is mandatory.
-- **NFR-02: Data Privacy & Tenant Isolation:** Project data is highly sensitive. The database architecture must enforce strict tenant isolation at the database schema level for Enterprise customers.
-- **NFR-03: Availability:** Core platform 99.9% uptime SLA. The regulatory engine and "Code Change Radar" are on a separate high-availability cluster.
-- **NFR-04: Response Time:** Initial permit list generation < 90 seconds for a 30-sheet plan set.
-- **NFR-05: Security & Compliance:** SOC 2 Type II certification process to begin immediately post-MVP. Data encrypted at rest (AES-256) and in transit (TLS 1.3). Full, immutable audit logging of all user actions.
-- **NFR-06: Legal & Liability Framework:** On sign-up and every project export, users must acknowledge that PermitAI output is an "AI-Generated Advisory Draft for Professional Validation." Platform UI carries a persistent, non-dismissible disclaimer in the footer. The product is not a licensed design or legal service.
-
----
-
-## 7. System Architecture & Technical Specifications
-
-### 7.1. High-Level Architecture
-*(Conceptual Diagram in Text)*
-
-**Client Layer**
-[React Web App] [iOS/Android (V2)]
-        ↓ (REST/GraphQL API via AWS API Gateway)
-
-**API & Orchestration Layer (AWS ECS/Kubernetes)**
-[Auth Service] → [Project Service] → [Intake Orchestrator]
-                                     ↓
-**AI Processing Pipeline (Event-Driven via AWS Step Functions/SQS)**
-1. [Document Ingestion & Virus Scan]
-2. [Computer Vision Microservice: Classify, OCR, Symbol Detect]
-3. [NLP Microservice: NER & Scope Tagging]
-4. [Rules Engine Microservice: Match Scope vs. Regulatory Graph]
-5. [Report Aggregator: Build Permit List & Confidence Scores]
-                                     ↓
-**Data & State Layer**
-[PostgreSQL (Tenant-Isolated)] → [AWS S3 (Plans)] → [Neo4j (Regulatory Graph DB)]
-                                     ↓
-**Monitoring & Notification Services**
-[Elasticsearch] → [Code Change Crawler Engine] → [Alert Manager (WebSockets/Email)]
-
-### 7.2. Technology Stack & Vendors
-- **Frontend:** Next.js, React, TypeScript, Tailwind CSS UI.
-- **Backend:** Node.js (core services), Python (AI microservices). GraphQL for main data API, REST for file uploads.
-- **AI/ML:** AWS SageMaker for custom model training & hosting. AWS Textract for raw OCR. PyTorch for CV & NLP models. LangChain (controlled usage) for the "Chat with Your Plans" RAG feature (V2).
-- **Database:** Amazon RDS for PostgreSQL (Transactional Data), Amazon Neptune (Managed Neo4j) for the Regulatory Graph.
-- **File Storage:** AWS S3 with lifecycle policies to move "closed" project files to Glacier.
-- **Search & Alerts:** Elasticsearch on AWS for full-text search of plan notes and code. WebSockets for real-time dashboard updates.
-- **Auth:** Auth0 by Okta for RBAC and SSO integrations.
-- **Monitoring:** Datadog for application performance, PagerDuty for on-call alerting.
-
-### 7.3. Regulatory Graph Database Detailed Schema (Simplified)
-- **Nodes:** `(:Jurisdiction {name: "City of Austin", type: "Municipal"})`, `(:CodeSection {id: "IBC_2021_907.2", text: "Where required..."})`, `(:Permit {name: "Commercial Building Permit", issuing_authority: "Austin Development Services"})`, `(:ScopeTag {name: "Fire Alarm", entity_type: "MEP"})`.
-- **Relationships:** `(:ScopeTag)-[:TRIGGERS]->(:Permit)-[:GOVERNED_BY]->(:CodeSection)-[:ADOPTED_BY]->(:Jurisdiction)`. All relationships have `effective_date` and `superseded_by` properties for versioning.
-
----
-
-## 8. Data Model & Privacy
-
-### 8.1. Core Data Objects
-- **Organization:** Company name, billing plan, seats, address, default jurisdiction.
-- **User:** Name, email, role (Owner, Manager, Expeditor), assigned Organization.
-- **Project:** Address, valuation, occupancy type, construction type, work class, current stage, Compliance Health Score.
-- **PlanSet:** A collection of uploaded `Document` objects, each with extracted metadata (OCR text, scope tags, class).
-- **PermitRequirement:** A specific permit linked to a Project, with status (Required, Obtained, N/A), issuing authority, fees, timeline, and citations. This is the central unit of work.
-- **AuditEvent:** Immutable log of: user action, timestamp, project ID, and details (e.g., "User:paul@xyz.com marked Permit E-01 as Obtained").
-
-### 8.2. Data Privacy Policy
-- **Data Ownership:** Users retain 100% ownership of all uploaded plans, project data, and generated reports. PermitAI claims no intellectual property over user data.
-- **Data Processing Consent:** Users consent to their data being processed by cloud-hosted AI models. A specific opt-in is required for using their anonymized, aggregated data for AI model improvement.
-- **Data Deletion:** Upon subscription cancellation, project data is preserved in a read-only state for 90 days (recovery window). After 90 days, all S3 files and database records are permanently purged via an automated, audited script. One-time exports (CSV/PDF) are offered during the 90-day window.
-
----
-
-## 9. UX/UI Design Specifications
-
-### 9.1. Guiding Design Principles
-- **Progressive Disclosure:** Don't show a junior estimator a Gantt chart of 40 permits. Start with: 1) Project Health Score, 2) Critical Path Permits Blocked, 3) Action Needed.
-- **Confidence, Not Certainty:** The UI must visually distinguish between a high-confidence code trigger and an AI-inferred "possible trigger" from a fuzzy symbol. Use clear visual language: solid green checkmark for code-backed, amber puzzle piece for AI suggestion.
-- **Source-Link Everywhere:** Every permit item, every extracted tag, is a clickable link back to its source: a highlighted box on a plan sheet or a hyperlink to a municipal code.
-
-### 9.2. Key Screen Mockups (Detailed Descriptions)
-
-**Screen 1: Portfolio Command Center (Post-Login Default)**
-- **Top Bar:** Org name, "New Project" button (prominent), search, notification bell with badge (Code Alerts + Sub Acknowledgements).
-- **Left Panel:** Filterable project list. Each item shows: Project Name, Address, Stage Badge, Health Score Donut (Red: <70, Yellow: 70-89, Green: 90+), and a "Next Action" micro-copy (e.g., "3 subs awaiting acknowledgement").
-- **Main Canvas:** A summary chart: "Permit Health Across Portfolio." X-axis: Projects. Y-axis: Health Score. A red horizontal line at 70. Below, a scrollable "Risk Feed" – a reverse-chronological list of every "Code Change Alert" and "Sub Overdue Acknowledgement" event across all projects.
-
-**Screen 2: Project Analysis & Ground Truth View (The Split Panel)**
-- **Left Panel (Plan Viewer):** A high-performance PDF/DWG viewer. A toggle switches between "Original Drawing" and "AI Analysis Overlay." In overlay mode, detected entities are highlighted with colored bounding boxes (Red=Structural Trigger, Blue=MEP, Yellow=Egress). Clicking a box expands a tooltip: "Extracted: New structural shear wall (Confidence: 97%). Triggers: Structural Plan Review, Special Inspection Req."
-- **Right Panel (Permit Roadmap):** A scrollable, grouped list. Accordion groups: Building Permits, Fire Permits, Trade Permits, Right-of-Way Permits, Other Agency Approvals. Each permit row shows: Status icon, Permit Name, "Why" link (opens citation), Responsible Party avatar, and Estimated Fee.
-
-**Screen 3: Subcontractor Compliance View (Mobile-First)**
-- A stripped-down, task-list interface for trade partners.
-- Shows a list of projects they've been tagged in. Tapping a project shows only their 2-4 assigned permits.
-- Large, touch-friendly button: "CONFIRM PERMIT OBTAINED." Tapping it opens a field to upload the permit document (mobile camera scan) and enter the permit number. This action fires a confirmation alert to the GC's log.
-
----
-
-## 10. Pricing, Packaging & Go-to-Market
-
-### 10.1. Detailed Pricing Table
-
-| Feature | Professional | Business | Enterprise |
+| Tier | Price | Projects/Mo | Key Features |
 | :--- | :--- | :--- | :--- |
-| **Target Customer** | Small GCs (5-25 employees) | Mid-size GCs & Developers (25-200 emp.) | National/ENR Contractors |
-| **Monthly Price** | $299/mo (ann.) | $799/mo (ann.) | Custom (est. $2,500+/mo) |
-| **Active Projects** | 10 | 50 | Unlimited |
-| **User Seats** | 3 | 15 | Custom (SSO incl.) |
-| **Core Plan Analysis** | Unlimited runs | Unlimited runs | Unlimited runs |
-| **Scope Templates** | 5 | 25 | Unlimited |
-| **Subcontractor Access** | View & Acknowledge | View & Acknowledge | Acknowledge & API to Procore |
-| **Code Change Radar** | Basic (Weekly Digest) | Pro (Immediate Alerts) | Pro + Custom Watch Lists |
-| **White-Label Reporting** | – | ✓ | ✓ (Custom Domain) |
-| **Support** | Email (48hr) | Priority Chat + Email | Dedicated CSM, SLA |
-| **API Access** | – | – | ✓ |
-| **Data Retention (Project)** | Active + 90 days | Active + 1 Year | Custom |
+| **Pro** | **$499/mo** (Annual) | Up to 5 active | AI plan analysis, scope decomposition, permit roadmap, post scopes to marketplace, compliance dashboard. |
+| **Business** | **$1,299/mo** (Annual) | Up to 25 active | Everything in Pro + advanced sub management, white-labeled bid packages, code change radar, priority support. |
+| **Enterprise** | **Custom** ($3k-$8k/mo) | Unlimited | Everything in Business + API access, SSO, dedicated CSM, custom integrations with Procore/Autodesk. |
 
-### 10.2. Add-ons & A La Carte
-- **Project Top-Up Packs:** $99 for 5 additional active project slots (Professional tier only).
-- **PermitAI Concierge Service:** Done-for-you permit management. Priced at a flat fee per building permit ($499) and per trade permit ($99), billed monthly in arrears.
+**Side B: Subcontractors**
+- **Free Tier:** Receive matched bid invitations. Submit bids. Manage awarded contracts and permit acknowledgements. (No cost to receive work.)
+- **Sub Pro:** **$149/mo** (Annual). Advanced profile with portfolio showcase, priority placement in GC search results, instant push notifications on scope postings matching your trades, and access to historical pricing analytics for smarter bidding.
+- **Marketplace Transaction Fee:** **4.5% of awarded subcontract value**, capped at $2,000 per contract, paid by the subcontractor upon contract signing. This ensures subs only pay when they win work. GCs pay zero transaction fees to post scopes.
 
-### 10.3. Go-to-Market Strategy & Launch Plan
-
-**Phase 1: Pre-Launch (Months 1-3) — Seed the Network**
-- **Target:** 20 Design Partners (mix of small GCs and two permit expediters).
-- **Action:** White-glove onboarding. Their first 3 months are free in exchange for structured feedback and joint case study. The goal is to fill the Scope Template library and debug the Regulatory Graph in their home jurisdictions.
-
-**Phase 2: Launch (Month 4) — Direct Sales Blitz**
-- **Channels:**
-    1.  **Paid Social (LinkedIn/Facebook):** Hyper-targeted ads at small GC owners and project managers. Creative: "What's Hiding in Your Plans? Scan Your Site Plan Free." Leads to the free "Jurisdiction Risk Score" tool.
-    2.  **Builder's Risk Insurance Partnership:** Execute a co-marketing agreement with a mid-sized insurer. They offer a 5% premium credit to contractors who use PermitAI on insured projects. This creates a powerful, third-party credibility signal.
-    3.  **Content Marketing:** Launch a "Confessions of a Plans Examiner" blog series authored by the in-house domain expert. SEO focus: long-tail keywords like "permit requirements for restaurant tenant improvement in Austin."
-
-**Phase 3: Growth (Month 7+) — Scale the Network**
-- **Expand Jurisdictional Coverage:** Hire two additional regulatory analysts. Focus on rapidly adding the top 20 fastest-growing construction metros in the US (Dallas, Phoenix, Atlanta, Nashville, etc.).
-- **Build the Subcontractor Network:** Implement a free "Subcontractor Basic" tier that allows subs to manage all their assigned permits from any GC for free. Monetize via GC subscriptions. This drives bottom-up platform adoption.
+### 4.3. Unit Economics Illustration
+A single mid-size project with $500,000 in subcontracts awarded through the platform:
+- **GC SaaS Revenue:** $499/mo (Pro tier, allocated across their active projects)
+- **Sub Transaction Fees:** 4.5% × $500,000 = $22,500, capped at $2,000 × (number of subcontracts). For 5 subcontracts: ~$10,000 in transaction fees.
+- **Total Platform Revenue for One Project:** ~$10,500.
+- **Compare:** A chatbot subscription: $20/month.
 
 ---
 
-## 11. Success Metrics & KPIs
+<a name="5"></a>
+## 5. Core Workflow: The BuildScope Loop
 
-### 11.1. North Star Metric
-**"Projects with a Compliance Health Score > 90."** This single metric encapsulates successful intake, complete permit identification, and active team coordination. It directly correlates to customer value and retention.
+This is the end-to-end product loop that creates the flywheel.
 
-### 11.2. Key Performance Indicators (KPIs)
+### Stage 1: Intelligent Ingestion
+1. GC creates a new project: enters address, project type, estimated valuation.
+2. GC uploads the full plan set (PDF, DWG, RVT).
+3. The platform automatically performs a geospatial overlay: zoning, flood zone, historic district, coastal zone.
 
-| Category | Metric | Target (MVP at 6 Months) | Business Rationale |
+### Stage 2: AI-Driven Scope Decomposition
+1. **Document Classification:** Sheets are auto-classified: Architectural, Structural, MEP, Civil, Details, Schedules.
+2. **Computer Vision Analysis:** The CV engine detects construction elements: walls, doors, windows, fixtures, structural members, mechanical equipment, electrical panels.
+3. **Scope Aggregation Engine:** Detected elements are grouped into bid-ready "Scope Packages" by trade division:
+   - **Division 03 - Concrete:** Slab on grade (sq. ft.), footings (linear ft.), rebar schedule.
+   - **Division 08 - Openings:** Hollow metal doors (count), aluminum storefront (sq. ft.).
+   - **Division 09 - Finishes:** Drywall (sq. ft.), ACT ceiling (sq. ft.), ceramic tile (sq. ft.).
+   - **Division 26 - Electrical:** Panel upgrades, fixture counts, circuit counts.
+4. **Permit Trigger Mapping:** Simultaneously, the rules engine maps detected elements to jurisdiction-specific permit requirements, producing a preliminary permit roadmap.
+
+### Stage 3: Marketplace Matching & Bidding
+1. **GC Review:** The GC reviews each AI-generated Scope Package. They can edit quantities, add notes, and set a bid deadline.
+2. **Post to Marketplace:** GC clicks "Post to Marketplace" for a given scope.
+3. **Intelligent Matching Engine:** The system identifies qualified subs based on:
+   - Verified trade license in the project's jurisdiction.
+   - Bonding capacity sufficient for the estimated scope value.
+   - Work radius encompassing the project site.
+   - Historical performance rating (4.0+ stars).
+   - Specialization tags matching the scope type.
+4. **Bid Invitation:** Matched subs receive a notification with the pre-extracted, structured bid package. No manual takeoff required.
+5. **Blind Bidding:** Subs submit bids through the platform by the deadline.
+6. **Bid Leveling Table:** The GC sees all bids in a side-by-side comparison view with each sub's rating, previous project history, and bid amount.
+
+### Stage 4: Award, Contract & Compliance
+1. **Award:** GC awards the scope to a subcontractor.
+2. **Transaction Fee:** The 4.5% transaction fee is processed.
+3. **Digital Subcontract:** The platform auto-generates a subcontract agreement with the AI-generated scope of work as an exhibit. Both parties e-sign.
+4. **Compliance Ledger Activation:** Upon contract signing, the sub's trade permits for that scope are automatically added to the project's Compliance Dashboard. The sub is now contractually and visibly accountable.
+5. **Active Monitoring:** The Code Change Radar monitors the cited code sections for the life of the project. Any change triggers an alert to both GC and sub.
+
+### Stage 5: Closeout & Performance Data
+1. Upon project completion, the GC rates the sub on Safety, Schedule Adherence, Quality, and Communication (1-5 stars).
+2. This performance data feeds back into the matching engine, making future recommendations more intelligent.
+3. A final "Project Closeout Compliance Report" is auto-generated and archived.
+
+---
+
+<a name="6"></a>
+## 6. Functional Requirements
+
+### 6.1. Project Intake & Plan Processing Module
+- **FR-01: Multi-Format Ingestion:** Accept PDF, DWG, DXF, RVT, IFC, JPG, PNG, TIFF. Bulk upload via .zip supported.
+- **FR-02: Document Classification AI:** Fine-tuned CV model classifies each sheet by type: Architectural Plan, Structural Plan, Civil Plan, MEP Plan, Title Sheet, Detail, Schedule, or Unrecognized. Confidence score displayed per sheet.
+- **FR-03: Optical Character Recognition (OCR):** Extract all text from vector and raster PDFs, including handwritten notes (with low-confidence flag). Extracted text is stored as searchable metadata.
+- **FR-04: Construction Symbol Detection:** CV model trained on a proprietary dataset of architectural/engineering symbols detects: walls, doors, windows, plumbing fixtures, electrical panels, HVAC diffusers, structural columns, and fire protection devices. Each detection is a structured data object with type, coordinates, and confidence score.
+- **FR-05: Named Entity Recognition (NER) for Scope:** NLP model processes all extracted text from notes, schedules, and specifications to identify scope-describing phrases ("Relocate sprinkler main," "New 400A service," "Remove load-bearing wall at Gridline C").
+- **FR-06: Quantity Aggregation:** Detected elements are quantified (counts, areas, linear feet) and grouped by MasterFormat division. Output is a structured JSON object representing each Scope Package.
+- **FR-07: Geospatial Overlay Analysis:** On project address entry, automatically query and overlay: FEMA Flood Zone, National Register of Historic Places district, US Fish & Wildlife wetlands, state coastal zone boundaries, and local zoning district.
+- **FR-08: Adaptive Project Wizard:** Dynamic questionnaire adapting based on extracted data. Minimum required fields: Project Valuation ($), Occupancy Classification (IBC Chapter 3), Construction Type (I-V), Work Type (New Construction, Alteration, Addition, Change of Use).
+
+### 6.2. Regulatory Intelligence & Permit Engine
+- **FR-09: Jurisdictional Rule Graph Database:** A versioned graph database (Neo4j) containing permit trigger logic for every supported jurisdiction. Nodes represent Scope Tags, Permits, Code Sections, and Issuing Authorities. Relationships represent conditional triggers.
+- **FR-10: Deterministic Rules Engine:** The permit requirement list is generated by executing the project's extracted Scope Tags against the rule graph. Generative AI is strictly prohibited from generating the final permit list. It is only used for unstructured text interpretation.
+- **FR-11: Citation Transparency & Source Linking:** Every permit recommendation includes: Permit Name, Issuing Authority, Triggering Scope Tag, and a direct hyperlink to the official, adopted municipal code section. An audit log records the exact rule version used.
+- **FR-12: Fee & Timeline Estimator:** Based on jurisdiction-sourced data and anonymized historical data, provide a permit fee estimate range and a typical review timeline for each permit.
+
+### 6.3. Subcontractor Profile & Verification Engine
+- **FR-13: Identity & Business Verification:** Subcontractor registration requires business name, EIN, principal contact, and proof of business entity status.
+- **FR-14: License Validation API:** Real-time integration with state licensing board databases. License number, classification, expiration date, and any disciplinary actions are verified on registration and re-verified monthly. Expired or invalid licenses immediately suspend marketplace access.
+- **FR-15: Insurance & Bonding Verification:** Subcontractors upload Certificate of Insurance (COI). AI parses the COI for coverage types, limits, effective dates, and named insured. System flags expiring COIs 30 days in advance. Bonding capacity is verified via surety provider integration or manual upload with verification workflow.
+- **FR-16: Work Radius & Trade Selection:** Subcontractors define their service area (by county or radius from zip code) and select their trade categories from a MasterFormat-based taxonomy.
+- **FR-17: Dynamic Capacity Declaration:** Subcontractors maintain a current "Available Capacity" indicator (High, Medium, Low, At Capacity). The matching engine weights availability in its recommendations.
+
+### 6.4. Marketplace Matching & Bidding Engine
+- **FR-18: Scope Posting & Configuration:** GC can post any AI-generated Scope Package to the marketplace. Required fields: bid deadline, preferred start date, any additional notes or requirements.
+- **FR-19: Intelligent Matching Algorithm:** A scoring engine ranks subcontractors for each scope based on a weighted composite score: License Match (binary pass/fail) > Geographic Fit > Performance Rating > Capacity > Specialization Match > Platform Activity.
+- **FR-20: Bid Package Assembly:** Matched subcontractors receive a structured bid package containing: the AI-quantified scope of work, relevant extracted plan sheets, project timeline, and any GC notes.
+- **FR-21: Blind Bidding System:** Bids are sealed until the deadline. The GC can see who has been invited and who has viewed the package, but not bid amounts.
+- **FR-22: Bid Leveling Dashboard:** After the deadline, the GC sees a sortable, filterable table comparing bids: Subcontractor Name, Performance Rating, Bid Amount, Bidder Notes, and "Award" button.
+- **FR-23: In-Platform Messaging:** Secure, logged messaging between GC and Sub for scope clarifications before and during bidding. System monitors for circumvention indicators (phone numbers, external emails) and flags potential ToS violations.
+
+### 6.5. Contract, Compliance & Closeout
+- **FR-24: Transaction Fee Processing:** Upon award, the 4.5% transaction fee (capped at $2,000) is calculated and charged to the subcontractor's payment method on file.
+- **FR-25: Digital Subcontract Generation:** The platform auto-populates a standardized subcontract agreement template with the project details, scope of work (from the AI-generated Scope Package), contract value, and dates. Both parties e-sign via integrated e-signature provider (e.g., Dropbox Sign or DocuSign API).
+- **FR-26: Compliance Ledger Activation:** Upon contract execution, the system automatically identifies the trade permits applicable to that subcontractor's scope and adds them to the project's Compliance Dashboard, with the sub assigned as "Responsible Party."
+- **FR-27: Digital Permit Acknowledgement:** Assigned subcontractors receive notification to acknowledge their trade permits. They can mark permits as "In Progress" or "Obtained" (with permit number and optional document upload). All status changes are time-stamped and logged.
+- **FR-28: Code Change Radar:** The system monitors the code sections cited in all active project permits. When a monitored code is amended in the project's jurisdiction, an alert is pushed to the GC and any impacted sub.
+- **FR-29: Post-Project Rating System:** Upon project completion, the GC must rate each awarded subcontractor on a 1-5 star scale across four dimensions: Safety, Schedule Adherence, Quality of Work, and Communication. A composite score is calculated and displayed on the sub's profile. Subcontractors may post a single public response to any review.
+
+---
+
+<a name="7"></a>
+## 7. Non-Functional Requirements
+
+- **NFR-01: Explainability & Grounding:** Every AI-extracted element (symbol, quantity, scope tag) must be traceable to its visual source on the original plan sheet. A "Show me" button highlights the detection's bounding box. Every permit recommendation must link to its governing code citation.
+- **NFR-02: Data Privacy & Tenant Isolation:** Project data, financials, and bid information are strictly isolated between competing organizations. Enterprise customers receive dedicated database schema isolation.
+- **NFR-03: Availability:** Core platform 99.9% uptime SLA. The regulatory engine and matching engine run on separate high-availability clusters.
+- **NFR-04: Response Time:** Initial plan processing and scope decomposition < 2 minutes for a 50-sheet plan set. Marketplace matching results displayed in < 5 seconds after posting.
+- **NFR-05: Security & Compliance:** SOC 2 Type II certification target within 12 months of launch. Data encrypted at rest (AES-256) and in transit (TLS 1.3). Full, immutable audit logging of all user actions, contract events, and data modifications.
+- **NFR-06: Legal & Liability Framework:** On signup, every project creation, and every report export, users must acknowledge that BuildScope AI outputs are "AI-Generated Advisory Drafts for Professional Validation." The platform is not a licensed design, engineering, or legal service. A persistent, non-dismissible disclaimer is present in the application footer. The platform's Terms of Service include a binding arbitration clause and explicit non-circumvention obligations for marketplace participants.
+
+---
+
+<a name="8"></a>
+## 8. System Architecture & Technical Specifications
+
+### 8.1. High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                              │
+│   [React/Next.js Web App]  [iOS/Android (V2)]                    │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │ GraphQL / REST / WebSocket
+┌───────────────────────────▼─────────────────────────────────────┐
+│                    API GATEWAY LAYER                             │
+│   [AWS API Gateway / Kong]  [Auth0 Authentication]               │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────────┐
+│                 ORCHESTRATION LAYER (Kubernetes)                 │
+│                                                                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
+│  │ Project  │  │  Intake  │  │ Marketplace│  │ Notification │    │
+│  │ Service  │  │Orchestr. │  │  Service   │  │   Service    │    │
+│  └──────────┘  └─────┬────┘  └──────────┘  └──────────────┘    │
+└──────────────────────┼──────────────────────────────────────────┘
+                       │ Event-Driven (AWS SQS / Kafka)
+┌──────────────────────▼──────────────────────────────────────────┐
+│                   AI PROCESSING PIPELINE                         │
+│                                                                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
+│  │ Document │  │ Computer │  │   NLP    │  │   Rules      │    │
+│  │ Ingestion│─▶│  Vision  │─▶│  NER +   │─▶│   Engine     │    │
+│  │ + OCR    │  │ Analysis │  │Aggregat. │  │ (Determin.)  │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────┬───────┘    │
+│                                                   │              │
+└───────────────────────────────────────────────────┼──────────────┘
+                                                    │
+┌───────────────────────────────────────────────────▼──────────────┐
+│                      DATA LAYER                                  │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │ PostgreSQL   │  │  Neo4j       │  │  AWS S3              │   │
+│  │ (Transactional│  │ (Regulatory │  │  (Plan Files,        │   │
+│  │  & User Data) │  │  Rule Graph)│  │   Exports)           │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────────────────────────────┐     │
+│  │ Elasticsearch│  │  Redis (Cache & Real-time Feeds)      │     │
+│  │ (Full-text   │  │                                      │     │
+│  │  Search)     │  │                                      │     │
+│  └──────────────┘  └──────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 8.2. Technology Stack
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS, Apollo Client (GraphQL).
+- **API Gateway:** AWS API Gateway or Kong. GraphQL for main data API, REST endpoints for file uploads.
+- **Backend Services:** Node.js (TypeScript) for core business logic services. Python (FastAPI) for AI microservices. Containerized on Kubernetes (AWS EKS).
+- **Message Queue:** AWS SQS (initial), Apache Kafka (scale) for event-driven pipeline orchestration.
+- **AI/ML:** AWS SageMaker for model training and hosting. PyTorch for custom CV and NLP models. AWS Textract for initial OCR pass. Custom-trained YOLOv8 for construction symbol detection. Fine-tuned transformer model (e.g., RoBERTa) for scope NER.
+- **Regulatory Graph Database:** Neo4j (Amazon Neptune managed service) storing jurisdictions, code sections, permits, and their triggering relationships.
+- **Transactional Database:** Amazon RDS for PostgreSQL. Multi-tenant isolation at the application layer; dedicated instances for Enterprise.
+- **File Storage:** AWS S3 with lifecycle policies (frequently accessed → infrequent access → Glacier for closed projects).
+- **Search:** Elasticsearch on AWS for full-text search across plan notes, code text, and subcontractor profiles.
+- **Real-time Updates:** WebSocket connections managed via API Gateway, backed by Redis pub/sub channels.
+- **Authentication & Authorization:** Auth0 by Okta. RBAC with custom claims for marketplace-specific roles. SSO support for Enterprise.
+- **E-Signature:** Dropbox Sign (HelloSign) API or DocuSign API integration.
+- **Monitoring & Observability:** Datadog for application performance monitoring, distributed tracing, and log aggregation. PagerDuty for on-call alerting.
+
+### 8.3. Regulatory Graph Database Schema (Conceptual)
+- **Nodes:**
+    - `(:Jurisdiction {name, type: "Municipal"/"County"/"State"/"Federal"})`
+    - `(:CodeSection {id, text, version, effective_date, url})`
+    - `(:Permit {name, issuing_authority, review_type, estimated_fee, estimated_timeline})`
+    - `(:ScopeTag {name, category: "Structural"/"MEP"/"Architectural"/"Civil"})`
+- **Relationships:**
+    - `(:ScopeTag)-[:TRIGGERS {condition}]->(:Permit)`
+    - `(:Permit)-[:GOVERNED_BY]->(:CodeSection)`
+    - `(:CodeSection)-[:ADOPTED_BY {adoption_date}]->(:Jurisdiction)`
+    - `(:Jurisdiction)-[:SUPERSEDES {date}]->(:Jurisdiction)` (for code versioning)
+
+---
+
+<a name="9"></a>
+## 9. Data Model & Privacy
+
+### 9.1. Core Data Entities
+- **Organization:** Company name, billing plan, payment method, default jurisdiction, branding assets (for white-label).
+- **User:** Name, email, role (GC_Admin, GC_ProjectManager, Sub_Owner, Sub_Estimator), associated Organization.
+- **Project:** Address, valuation, occupancy type, construction type, work class, current stage, Compliance Health Score, associated PlanSet.
+- **PlanSet:** Collection of uploaded `Document` objects, each with extracted metadata (OCR full text, detected symbols, confidence scores).
+- **ScopePackage:** An AI-generated, GC-edited work package. Contains trade division, quantified elements, associated documents, bid deadline, status (Draft, Posted, Bidding, Awarded, Completed).
+- **Bid:** Submitted by a Subcontractor on a specific ScopePackage. Contains bid amount, inclusions/exclusions, notes, and timestamp. Sealed until deadline.
+- **Contract:** Generated upon award. Contains final scope, value, parties, e-signature status, and links to associated PermitRequirements.
+- **SubcontractorProfile:** Extended user profile with license info, insurance, bonding, work radius, trade categories, capacity, and composite performance rating.
+- **PermitRequirement:** A specific permit linked to a Project and optionally to a Contract/Sub. Status (Required, In Progress, Obtained, N/A), permit number, issuing authority, linked code citations.
+- **PerformanceReview:** GC-submitted ratings and optional text review linked to a completed Contract.
+- **AuditEvent:** Immutable log of all significant user and system actions.
+
+### 9.2. Data Privacy & Governance
+- **Data Ownership:** Users retain 100% ownership of all uploaded plans, project data, and proprietary information. BuildScope AI claims a limited, non-exclusive license to process data to provide the service.
+- **Anonymized Data Usage:** A specific, opt-in consent is required for using anonymized, aggregated data for AI model improvement. Opt-in is incentivized but not required for core service.
+- **Data Deletion Policy:** Upon subscription cancellation, project and profile data are preserved in read-only state for 90 days. During this window, users may export all data (structured CSV, PDF reports, plan files). After 90 days, all data is permanently purged via automated, audited deletion scripts.
+- **Marketplace Data Firewall:** Bidding data, contract values, and performance reviews are strictly governed by role-based access. A subcontractor's bid is visible only to the GC on that specific scope, not to other subs. Proprietary pricing data is never exposed across competing GCs.
+
+---
+
+<a name="10"></a>
+## 10. UX/UI Design Specifications
+
+### 10.1. Guiding Design Principles
+- **Progressive Confidence:** The UI visually distinguishes between AI-extracted data (amber "AI-suggested" badge) and human-verified data (green "GC-confirmed" badge). Trust is built through transparency, not false certainty.
+- **Source-Link Everything:** Every detected symbol, every extracted quantity, every recommended permit is a clickable element linking directly to its source: a bounding box on the plan sheet or a hyperlink to the municipal code.
+- **Action-Oriented Dashboard:** The primary dashboard is not a passive data display. It is an "Action Required" feed. The user's first glance answers: "What do I need to do today?"
+
+### 10.2. Key Screens
+
+**Screen 1: Command Center (Post-Login Default for GCs)**
+- **Top Bar:** Org name, "New Project" button (prominent, always visible), global search, notification bell with badges for: new bids received, sub acknowledgements pending, code change alerts.
+- **Left Panel:** Filterable project list. Each row shows Project Name, Address, Stage Badge, and a Health Score donut chart. At-risk projects (Health Score <70) are highlighted in red and pinned to the top.
+- **Main Canvas:** A "Priority Feed" showing time-sensitive items across all active projects: expiring sub insurance, pending bid deadlines, overdue permit acknowledgements, code change alerts. Items are grouped by project and sorted by urgency.
+
+**Screen 2: The Scope Decomposition Studio (The Core Differentiator)**
+- **Split-Panel Layout:**
+    - **Left Panel (Plan Viewer):** High-performance PDF/DWG viewer. Toggle overlay mode to see AI detections as color-coded bounding boxes. Click any box to see extracted data and confidence score. User can "Confirm" or "Reject" any AI detection, training the model over time.
+    - **Right Panel (Scope Packages):** A vertical, scrollable list of AI-generated Scope Packages, grouped by trade division. Each package card shows: Trade, Quantified Summary, Confidence Score, and buttons for "Edit," "Post to Marketplace," or "Assign Manually." Expanding a card shows the detailed quantity takeoff.
+- **Action:** GC reviews, adjusts quantities, adds notes, and clicks "Post to Marketplace" on a package. A modal confirms the bid deadline and the number of matched subs who will be invited.
+
+**Screen 3: Bid Leveling & Award Dashboard**
+- **Layout:** A table view of a specific Scope Package's bids.
+- **Columns:** Subcontractor Name, Composite Star Rating, Previous Projects Completed on Platform, Bid Amount, Bidder Notes, and "Award" button.
+- **Interactivity:** Clicking a sub's name opens a side panel with their full profile, performance history, and reviews. The "Award" button triggers the contract generation and transaction fee processing flow.
+
+**Screen 4: Subcontractor Mobile View (Mobile-First)**
+- **Default View:** "Open Bid Invitations" feed. Each card shows a brief scope summary, GC name, project location, bid deadline, and "View Bid Package" button.
+- **Bid Package View:** Structured, mobile-readable breakdown of the scope quantities and relevant plan snippets (pre-cropped by the AI).
+- **Action:** A large, thumb-friendly "Submit Bid" button with amount and optional notes.
+- **My Work View:** A simple list of awarded contracts with their current compliance acknowledgement status. A prominent "Confirm Permit Obtained" button for each trade permit, with camera upload for the physical permit document.
+
+---
+
+<a name="11"></a>
+## 11. Go-to-Market Strategy
+
+### 11.1. The Cold-Start Solution
+Two-sided marketplaces face a chicken-and-egg problem. Our strategy solves it by injecting supply, then using a compelling "aha moment" to pull demand.
+
+**Phase 1: Seed the Supply Side (Months 1-2 Pre-Launch)**
+- **Partnership:** Execute a formal partnership with the **American Subcontractors Association (ASA)** and 3-5 regional ASA chapters.
+- **The Offer:** ASA members receive a free 12-month "Sub Pro" subscription ($149/mo value) and zero transaction fees for their first three awarded contracts.
+- **The Ask:** During a 60-day onboarding period, these subs build out their verified profiles (license, insurance, bonding, trade categories, work radius). We do the heavy lifting of verification.
+- **Target:** 200-300 fully verified, marketplace-ready subcontractors across our initial 3-5 jurisdictions on Day 1.
+
+**Phase 2: Activate the Demand Side (Month 3 Launch)**
+- **Target:** 50 mid-size GCs in the same geographic regions as our seeded subs.
+- **The Irresistible Hook:** A 60-day free trial of the Pro plan with a specific, high-value promise: *"Upload your next project's plans. We will return structured, biddable scope packages AND competitive bids from pre-vetted subcontractors within 72 hours. No cost to you for the trial."*
+- **The Aha Moment:** The GC receives 3-5 legitimate, competitive bids from fully verified subcontractors they didn't know existed. They save time on scoping and potentially 5-10% on the subcontract value. The platform has now generated tangible, monetary ROI.
+
+**Phase 3: Ignite the Flywheel (Months 6+)**
+- **Referral Program:** GCs who refer another paying GC receive one free month. Subs who refer another sub (who wins a contract) receive a $100 credit against future transaction fees.
+- **Organic Supply Growth:** Awarded contracts create peer pressure. Subs who win work talk. Unawarded invited subs still see the platform's bid quality and re-engage on the next match.
+- **Geographic Expansion:** Once a metro hits critical liquidity (e.g., 50+ active GCs and 200+ verified subs across the top 8 trades), expand to the next adjacent metro using the same ASA-first seeding playbook.
+- **Content & SEO Moat:** Publish jurisdiction-specific guides ("Permit requirements for restaurant TIs in Phoenix") that feed the top of the funnel and reinforce the compliance pillar.
+
+### 11.2. Launch Channels
+1. **Association Partnerships:** ASA national + regional chapters (primary supply channel). Secondary: AGC chapter lunch-and-learns for GC demand.
+2. **LinkedIn Outbound + Paid:** Hyper-targeted ads to GC owners and PMs in launch metros. Creative focuses on the aha moment: "Plans in Monday. Competitive bids by Wednesday."
+3. **Insurance / Surety Co-Marketing:** Partner with a mid-market builders-risk or surety provider. Offer a premium or bonding-process benefit for projects that run compliance through BuildScope. Third-party credibility accelerates GC trust.
+4. **Design-Partner Program:** 10–15 GCs onboarded pre-launch with white-glove support in exchange for structured feedback, case studies, and permission to use anonymized outcomes in marketing.
+
+### 11.3. Initial Launch Footprint
+MVP launch concentrates liquidity in **3 metros** (recommended: Phoenix, Dallas, Atlanta) covering the top trade categories first: Electrical, Plumbing, HVAC, Concrete, Framing, Drywall, Openings, and Fire Protection. Jurisdictional regulatory graph coverage must be production-ready in these metros before demand activation.
+
+### 11.4. Positioning & Messaging Pillars
+| Audience | Primary Message | Proof Point |
+| :--- | :--- | :--- |
+| **GC** | "Turn plans into competitive, compliance-ready subcontracts—without the takeoff grind." | Time-to-first-bid < 72 hours; verified license/insurance on every matched sub. |
+| **Sub** | "Get bid packages that are already takeoff-ready. Only pay when you win." | Free to receive work; 4.5% fee only on award (capped). |
+| **Both** | "Compliance is built into the contract, not chased after award." | Auto-activated Compliance Ledger + Code Change Radar. |
+
+---
+
+<a name="12"></a>
+## 12. Success Metrics & KPIs
+
+### 12.1. North Star Metric
+**Gross Merchandise Value (GMV) of awarded subcontracts per month.**
+This single metric proves that AI scoping and marketplace matching are producing real economic activity—not vanity engagement.
+
+### 12.2. Supporting KPIs
+
+| Category | Metric | Target (6 Months Post-Launch) | Why It Matters |
 | :--- | :--- | :--- | :--- |
-| **Revenue** | Net Revenue Retention (NRR) | >100% | Proves expansion covers churn. Core SaaS health metric. |
-| **Revenue** | Monthly Recurring Revenue (MRR) | $30,000 | Measured growth from a base of $0. |
-| **Retention** | Logo Churn Rate (Monthly) | <3% | Below 3% validates essential "system of record" status. |
-| **Engagement** | Project Save Rate | >95% | Confirms users see lasting value in the digital locker. |
-| **Engagement** | Sub Invite Rate | >1.5 invites per paying project | Measures the virality of the network effect. |
-| **Product** | Time-to-Permit-List (P50) | <45 seconds | Core value proposition performance. |
-| **Product** | AI Scope Tag Accuracy (Precision) | >90% (User-accepted vs. rejected) | Builds user trust and reduces correction overhead. |
-| **Customer** | Customer Satisfaction (CSAT) | >85% "Satisfied" or "Very Satisfied" | Post-project-run survey. |
+| **Marketplace Liquidity** | Monthly GMV | $2.5M+ | Core proof of product-market fit. |
+| **Marketplace Liquidity** | Bid response rate (invited → bid submitted) | >35% | Indicates match quality and bid-package usefulness. |
+| **Marketplace Liquidity** | Median bids per posted scope | ≥3 | Competitive dynamics required for GC retention. |
+| **Demand (GC)** | Paying GC logos | 40+ | Validates willingness to pay for the SaaS layer. |
+| **Demand (GC)** | Scopes posted / active GC / month | ≥2 | Habit formation; platform becomes procurement workflow. |
+| **Supply (Sub)** | Verified, marketplace-ready subs | 400+ across launch metros | Supply depth without which matching fails. |
+| **Supply (Sub)** | Sub Pro conversion (free → paid) | >8% of active bidders | Validates premium supply-side monetization. |
+| **AI Quality** | Scope Package accept rate (GC confirms without major edit) | >70% | Trust in takeoff accuracy. |
+| **AI Quality** | Permit citation dispute rate | <5% of recommendations flagged incorrect | Trust in regulatory engine. |
+| **Compliance** | % awarded contracts with Compliance Ledger activated | 100% (system-enforced) | Differentiator vs. pure bid boards. |
+| **Compliance** | Sub permit acknowledgement within 7 days of award | >80% | Closes the compliance loop. |
+| **Retention** | GC logo churn (monthly) | <4% | Proves the product is sticky beyond a trial bid. |
+| **Unit Economics** | Take rate (net marketplace fees / GMV) | 2.5–4.0% blended after caps | Path to contribution-margin health. |
+| **Unit Economics** | CAC payback (blended GC + Sub) | <9 months | Sustainable growth. |
+
+### 12.3. Leading Indicators (Weekly Ops Review)
+- New verified sub profiles completed
+- Plan sets successfully processed end-to-end
+- Time-to-first-match after scope post (P50 / P90)
+- Circumvention flags (off-platform contact attempts)
+- Code Change Radar alerts issued and acknowledged
 
 ---
 
-## 12. Product Roadmap (MVP to V3)
+<a name="13"></a>
+## 13. Product Roadmap
 
-### MVP (V1.0) — The Trusted Co-Pilot
-- **Core:** PDF/Image upload, computer vision for 5 key symbol types, basic OCR.
-- **Regulation:** Graph database covering 5 initial jurisdictions (e.g., Austin, Phoenix, Denver, Atlanta, Seattle).
-- **Output:** A clean, source-linked permit list and a static compliance dashboard.
-- **Retention:** Project save, basic scope templates, and a manual "Permit Obtained" toggle.
-- **This validates the core loop:** Can the AI reliably find the right permits?
+### MVP (V1.0) — Prove the Loop
+**Goal:** Validate that AI can produce useful Scope Packages, that matched subs will bid, and that award → compliance activation works in 3 metros.
 
-### V2.0 — The Compliance System of Record (6 Months Post-MVP)
-- **Core:** .DWG and .RVT native file support. AI confidence score on all extractions.
-- **Regulation:** Expand to 25 major metro areas. Launch the "Code Change Radar" monitoring service.
-- **Collaboration:** Full Subcontractor Network with role-based access, digital attestation, and the Compliance Health Score algorithm.
-- **This validates the business model:** Does team collaboration and active monitoring cut churn in half?
+**In scope:**
+- PDF + image plan upload; sheet classification; OCR; symbol detection for a limited element set (walls, doors, windows, fixtures, panels, columns)
+- MasterFormat-grouped Scope Packages with GC edit/confirm
+- Deterministic permit roadmap for launch jurisdictions (source-linked)
+- Sub verification: license API + COI upload/parse + work radius + trades
+- Matching, sealed bidding, bid leveling, award
+- Digital subcontract (template + e-sign) and transaction fee collection
+- Compliance Ledger activation + permit acknowledgement
+- GC Command Center + Scope Studio + Bid Leveling; Sub mobile bid/work views
 
-### V3.0 — The Industry Network & Intelligence Layer (12+ Months Post-MVP)
-- **Core:** "Chat-with-Your-Plans" RAG interface. User asks natural language questions ("Where are all the fire-rated wall details?").
-- **Ecosystem:** Public API for Procore/Autodesk BIM 360. "PermitAI Connect" app marketplace.
-- **Data Product:** Anonymized Permit Intelligence Reports. Sell aggregated, non-identifiable data on regional permit timelines, common delay triggers, and fee inflation to building product manufacturers, real estate investors, and insurers.
-- **This validates the long-term defensibility:** Does our proprietary dataset create an insurmountable competitive moat?
+**Out of scope for MVP:** Native DWG/RVT parsing, Code Change Radar, white-label packages, Procore/Autodesk integrations, advanced pricing intelligence.
+
+**Success gate to exit MVP:** ≥3 median bids per posted scope, >70% scope accept rate, first $1M cumulative GMV, <5% permit dispute rate in launch metros.
+
+### V1.5 — Liquidity & Trust Hardening (≈3 Months Post-MVP)
+- Expand to 2–3 additional metros and deepen trade coverage
+- Stronger circumvention detection and dispute workflows
+- Sub capacity signals and improved match ranking with early performance data
+- Fee/timeline estimator refinements from observed award data
+- GC invite-known-sub path ("Assign Manually") alongside marketplace post, so existing relationships still land in the Compliance Ledger
+
+### V2.0 — Compliance System of Record (≈6 Months Post-MVP)
+- Code Change Radar live monitoring and impact alerts
+- Native DWG / RVT ingestion path
+- Portfolio-level compliance health scoring and insurer-ready closeout reports
+- In-platform messaging v2 with richer clarification threads attached to scope line items
+- Business-tier features: white-labeled bid packages, priority support tooling
+
+### V3.0 — Network Intelligence Layer (≈12+ Months Post-MVP)
+- Proprietary pricing intelligence ("what similar scopes awarded for in this metro")
+- Chat-with-plans RAG for GC/sub clarification (advisory only; never final permit authority)
+- Public API + Procore / Autodesk Construction Cloud integrations
+- Anonymized market reports for insurers, manufacturers, and capital partners
+- Optional expediter / concierge network for white-glove permit filing in top metros
 
 ---
 
-## 13. Risks, Assumptions & Mitigations
+<a name="14"></a>
+## 14. Risks, Assumptions & Mitigations
 
-### 13.1. Key Business Assumptions
-1.  **Willingness to Adopt AI:** Assumes mid-market GCs are sufficiently frustrated with the manual status quo to trust a new AI-driven process.
-2.  **Regulatory Access:** Assumes municipal code data can be sourced, structured, and maintained at a quality level that satisfies professional users. A dedicated operations team is critical.
-3.  **Pricing Tolerance:** Assumes the target persona sees $299/month as trivial compared to the cost of a single permit-induced delay (often $10k+).
+### 14.1. Key Assumptions
+1. Mid-market GCs will trust AI-quantified scopes enough to post them for competitive bid after a short human review.
+2. Subcontractors will accept a capped success fee when bid packages meaningfully reduce takeoff time.
+3. State license APIs and COI parsing are reliable enough to automate most verification; edge cases can be handled with a small ops queue.
+4. Concentrating on 3 metros creates enough density for ≥3 bids per scope within 6 months.
+5. Deterministic regulatory graph coverage can be maintained for launch jurisdictions with a dedicated domain analyst.
 
-### 13.2. Risk Register & Mitigation
+### 14.2. Risk Register
 
-| **Risk** | **Probability** | **Severity** | **Mitigation Strategy** |
+| Risk | Probability | Severity | Mitigation |
 | :--- | :--- | :--- | :--- |
-| **AI Hallucinates a Permit** (Misses critical or invents one) | Medium | **Critical** | The final recommendation is a strict, hard-coded rules engine output. GenAI's role is strictly limited to interpreting plan notes, and even then, a human-readable source link is mandatory. We integrate a "Flag as Incorrect" feedback button on every output, which goes directly to the domain expert. |
-| **Regulatory Database Decay & Liability** (Missing new codes) | High | **High** | A full-time in-house regulatory analyst role, combined with automated web scraping and a community "Suggest a Code Update" feature. The "Code Change Radar" proactively alerts users even to *pending* changes, turning a vulnerability into a feature. The Terms of Service clearly state the platform is an advisory tool, not a legal guarantee. |
-| **"Excel is Free" Relapse** (Churn due to lack of habit) | High | **High** | The "Smart Defaults" (Project Genome™) and Subcontractor Ledger are designed to make the platform 10x faster for repeat work and essential for team coordination. A weekly automated email report pulls users back with personalized data. |
-| **Slow Enterprise Sales Cycles** | Medium | **Medium** | The initial GTM is focused squarely on agile, owner-operated small/mid-size GCs who can make a buying decision in a single call. Enterprise contracts are a V3 growth lever, not an MVP dependency. |
+| **Marketplace cold start** (scopes posted, few/no bids) | High | Critical | ASA seeding to 200–300 verified subs before GC launch; 72-hour bid guarantee during trial with ops-assisted matching; geographic concentration. |
+| **Disintermediation** (parties meet on-platform, close off-platform) | High | High | Non-circumvention ToS; messaging monitoring for contact leakage; fee structure that feels fair (cap at $2,000); value that continues post-award (compliance, ratings, future match quality). |
+| **AI quantity errors erode trust** | Medium | Critical | Progressive confidence UI; mandatory GC confirm before post; "Show me" grounding to plan geometry; human-in-the-loop feedback loop into model retraining. |
+| **Permit hallucination / wrong citation** | Medium | Critical | Generative AI banned from final permit list; deterministic rule graph only; every output source-linked; "Flag as incorrect" → domain expert SLA. |
+| **Regulatory data decay** | High | High | Dedicated regulatory analyst; versioned graph; Code Change Radar (V2); clear advisory disclaimer and professional-validation requirement. |
+| **License/insurance verification gaps** | Medium | High | Multi-source license checks; monthly re-verification; auto-suspend on expiry; manual ops escalation for non-API states. |
+| **Liability from advisory outputs** | Medium | High | Persistent disclaimer; ToS + arbitration; outputs framed as drafts for professional validation; audit log of rule versions used. |
+| **Incumbent response** (Procore / BuildingConnected adds AI scoping) | Medium | High | Speed to closed-loop data moat (performance + compliance graph); exclusive depth in launch metros; association partnerships. |
+| **Payment / fee collection friction** | Medium | Medium | Collect payment method at Sub Pro or first award; clear fee preview before bid submit; support for dispute holds. |
+
+### 14.3. Open Decisions (Track Explicitly)
+1. Whether "Assign Manually" (known-sub path) ships in MVP or V1.5 — recommended **V1.5** so MVP pressure-tests true marketplace liquidity first, while not blocking later relationship import.
+2. Whether transaction fees are charged only to subs (current plan) or split GC/sub in Enterprise deals.
+3. Build vs. buy for e-signature and payout rails (Dropbox Sign / DocuSign; Stripe Connect or equivalent).
 
 ---
 
-## 14. Open Questions
-1.  **Expert Review Network:** Should we build an in-house team of permit expediters for the "Concierge" tier, or create a two-sided marketplace connecting users to vetted third-party expediters? (Decision: In-house for quality control in initial markets, marketplace for scale in V3).
-2.  **Pricing for Subcontractors:** Is a "free forever" tier for subcontractors sustainable, or will it create a support burden without direct revenue? We will cap free sub access at 3 active projects and prompt for a low-cost $49/month "Pro Sub" tier with premium features.
-3.  **Internationalization:** When to tackle Canada (National Building Code) vs. expanding US state coverage? US state coverage is the priority for the first 24 months due to market size and single-language requirement.
+<a name="15"></a>
+## 15. Glossary
+
+| Term | Definition |
+| :--- | :--- |
+| **BuildScope Loop** | The end-to-end workflow: ingest plans → decompose scopes → match & bid → award & contract → compliance → performance feedback. |
+| **Scope Package** | An AI-generated, GC-editable unit of work grouped by MasterFormat trade division, including quantified takeoff and linked plan evidence. |
+| **Scope Tag** | A machine-readable label extracted from plans or notes (e.g., structural shear wall, electrical panel upgrade) used for permit triggers and matching. |
+| **Verifiable Ground Truth** | Permit and compliance outputs produced by a deterministic, versioned rules engine with citations—not generative free text. |
+| **Regulatory Rule Graph** | The Neo4j/Neptune graph linking Scope Tags → Permits → Code Sections → Jurisdictions, with versioning and effective dates. |
+| **Citation Transparency** | Every permit recommendation includes a direct link to the adopted municipal (or higher) code section that triggers it. |
+| **Intelligent Matching Engine** | Scoring system that ranks verified subcontractors for a posted scope using license, geography, performance, capacity, specialization, and activity. |
+| **Blind Bidding** | Sealed bid process where amounts are hidden from the GC (and other subs) until the bid deadline. |
+| **Bid Leveling** | Side-by-side comparison of submitted bids with sub ratings, history, amounts, and notes to support award decisions. |
+| **Compliance Ledger** | Project-level record of required permits, responsible parties (often awarded subs), statuses, and immutable acknowledgement history. |
+| **Code Change Radar** | Monitoring service that watches cited code sections for amendments and alerts impacted GCs/subs (V2). |
+| **Compliance Health Score** | 0–100 portfolio/project metric reflecting obtained + N/A permits versus total required permits. |
+| **Closed-Loop Transaction Network** | Marketplace design where award, compliance, and performance data feed back into matching and pricing intelligence. |
+| **GMV (Gross Merchandise Value)** | Total dollar value of subcontracts awarded through the platform in a period. |
+| **Take Rate** | Platform marketplace fee revenue as a percentage of GMV (affected by the per-contract fee cap). |
+| **Cold Start** | The two-sided marketplace problem of needing both sufficient verified subs and active GC demand simultaneously. |
+| **Disintermediation / Circumvention** | Parties using the platform to meet, then completing the transaction off-platform to avoid fees. |
+| **MasterFormat** | CSI numbering system for organizing construction work by division (e.g., 03 Concrete, 26 Electrical); used to structure Scope Packages. |
+| **COI** | Certificate of Insurance; uploaded and parsed to verify coverage types, limits, and dates for marketplace eligibility. |
+| **Progressive Confidence** | UX pattern that visually separates AI-suggested extractions from GC-confirmed data. |
 
 ---
 
-## 15. Appendix
-
-### 15.1. Glossary
-- **Project Genome™:** The internal machine learning model that learns a contractor's typical project parameters from repeated use.
-- **Code Change Radar™:** The automated system that monitors municipal codes and correlates updates against user projects.
-- **Scope Tag:** A machine-readable metadata label extracted from plans (e.g., "Structural_ShearWall," "Electrical_PanelUpgrade").
-- **Compliance Health Score:** A 0-100 metric showing the percentage of required permits that have been obtained or formally waived.
-- **Regulatory Graph:** The Neo4j database that maps the relationship between scope, permits, and legal code citations.
-- **Audit Trail:** An immutable, time-stamped log of all significant user and system actions on a project.
-
-### 15.2. Sample Project Lifecycle Flow
-1.  **Bid:** User creates project, uploads preliminary drawings, gets a "Bid Stage" permit list and fee estimate. Template created.
-2.  **Award:** Project stage moved to "Active." Permit list is re-generated against 100% construction documents for final validation.
-3.  **Pre-Construction:** Subcontractors invited, assigned trade permits. Compliance dashboard built. Code Change Radar activated.
-4.  **Construction:** GC and subs digitally check off permits as they are obtained. Application forms (V2) are pre-filled. Any mid-project code alerts are investigated.
-5.  **Closeout:** All permits "Obtained" or "N/A." Compliance Health Score at 100. A final "Project Closeout Compliance Report" PDF is auto-generated and archived for the owner and insurer. Project locked, data moves to cold storage per policy.
+*End of PRD v1.0 — BuildScope AI*
