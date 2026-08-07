@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Disclaimer } from "@/components/Disclaimer";
+import { Pricing } from "@/components/Pricing";
 import type { AnalysisResult, Permit, Subcontractor } from "@/lib/types";
 
 const BTN =
@@ -593,6 +594,8 @@ export function Results({ data, projectZip, onRestart }: Props) {
           </div>
         )}
         </section>
+
+      <Pricing />
 
       <div className="mt-12">
         <Disclaimer />

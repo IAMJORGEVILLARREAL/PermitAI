@@ -36,6 +36,14 @@ export function Landing({ onStart }: Props) {
       >
         Analyze a project →
       </button>
+
+      <p className="mt-5 text-sm text-[var(--muted)]">
+        First analysis is free · Plans from{" "}
+        <span className="stat-num font-semibold text-[var(--text)]">
+          $299/mo
+        </span>{" "}
+        for small GCs
+      </p>
     </section>
   );
 }
