@@ -1,27 +1,30 @@
-import Image from "next/image";
 import { Reveal } from "./Reveal";
 
 const STEPS = [
   {
     n: "01",
     title: "Ingest the set",
-    body: "Upload PDF, DWG, or RVT. Sheets classify automatically. The address overlays zoning, flood, wetland, and historic-district data.",
-    image: "/images/plan-sheet.jpg",
-    alt: "Architectural floor plan spread on a drafting table.",
+    body: "Upload the full package. Sheets are classified and read, then the site address is overlaid with zoning, flood, wetland, and historic-district data.",
   },
   {
     n: "02",
     title: "Decompose the scope",
-    body: "Vision models detect walls, openings, fixtures, and panels, then quantify them into MasterFormat Scope Packages with source coordinates.",
-    image: "/images/hands-plans.jpg",
-    alt: "Estimator measuring quantities on a plan set with a scale ruler.",
+    body: "Vision models detect walls, openings, fixtures, panels, and structural members, then quantify them into packages by MasterFormat division.",
   },
   {
     n: "03",
-    title: "Match, bid, award",
-    body: "Post a package. Verified subs receive a takeoff-ready invite. Sealed bids open into a leveling table. Award writes the subcontract.",
-    image: "/images/radar-feature.jpg",
-    alt: "BuildScope radar dashboard monitoring subcontractor matches in real time.",
+    title: "Post the package",
+    body: "You confirm the quantities and set a deadline. Matching ranks subcontractors on license, radius, bonding, capacity, and prior performance.",
+  },
+  {
+    n: "04",
+    title: "Level and award",
+    body: "Sealed bids open at the deadline. Compare them side by side, award, and the subcontract generates with the scope attached as an exhibit.",
+  },
+  {
+    n: "05",
+    title: "Track the permits",
+    body: "On execution, that sub's trade permits enter the project ledger with their name on them. Nothing gets chased down after the fact.",
   },
 ];
 
@@ -36,30 +39,36 @@ export function Loop() {
           </h2>
         </Reveal>
 
-        <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-6">
+        <div className="mt-16 grid gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-y-0">
           {STEPS.map((step, i) => (
-            <Reveal key={step.n} delay={i * 70}>
-              <article>
-                <div className="relative aspect-square overflow-hidden bg-paper">
-                  <Image
-                    src={step.image}
-                    alt={step.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover"
+            <Reveal key={step.n} delay={i * 50}>
+              <article
+                className={
+                  i === 0
+                    ? "lg:pr-5"
+                    : i === STEPS.length - 1
+                      ? "border-t border-hairline pt-10 sm:border-t-0 sm:pt-0 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0"
+                      : "border-t border-hairline pt-10 sm:border-t-0 sm:pt-0 lg:border-l lg:pl-5"
+                }
+              >
+                <div className="flex items-center gap-2.5 pb-3.5">
+                  <span
+                    className="size-1.5 shrink-0 bg-lime"
+                    aria-hidden
                   />
-                </div>
-                <div className="mt-5 flex items-baseline gap-3">
-                  <span className="font-mono text-[11px] tracking-[0.12em] text-concrete">
+                  <span className="font-mono text-[10px] tracking-[0.12em] text-concrete">
                     {step.n}
                   </span>
-                  <h3 className="font-display text-[20px] font-medium tracking-[-0.02em] text-carbon">
+                </div>
+                <div className="h-px bg-hairline-strong" aria-hidden />
+                <div className="pt-5">
+                  <h3 className="font-display text-[18px] font-medium tracking-[-0.02em] text-carbon">
                     {step.title}
                   </h3>
+                  <p className="mt-2.5 text-[13px] leading-relaxed text-steel">
+                    {step.body}
+                  </p>
                 </div>
-                <p className="mt-3 text-[13px] leading-relaxed text-steel">
-                  {step.body}
-                </p>
               </article>
             </Reveal>
           ))}
