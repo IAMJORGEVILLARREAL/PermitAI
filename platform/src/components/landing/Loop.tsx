@@ -6,22 +6,22 @@ const STEPS = [
     n: "01",
     title: "Ingest the set",
     body: "Upload PDF, DWG, or RVT. Sheets classify automatically. The address overlays zoning, flood, wetland, and historic-district data.",
-    image: "/images/how-upload.jpg",
-    alt: "Technical illustration of plan sheets being scanned by a detection line.",
+    image: "/images/plan-sheet.jpg",
+    alt: "Architectural floor plan spread on a drafting table.",
   },
   {
     n: "02",
     title: "Decompose the scope",
     body: "Vision models detect walls, openings, fixtures, and panels, then quantify them into MasterFormat Scope Packages with source coordinates.",
-    image: "/images/how-reason.jpg",
-    alt: "Technical illustration of a regulatory node graph lighting up.",
+    image: "/images/hands-plans.jpg",
+    alt: "Estimator measuring quantities on a plan set with a scale ruler.",
   },
   {
     n: "03",
     title: "Match, bid, award",
     body: "Post a package. Verified subs receive a takeoff-ready invite. Sealed bids open into a leveling table. Award writes the subcontract.",
-    image: "/images/how-radar.jpg",
-    alt: "Technical illustration of a signal being caught on a monitoring surface.",
+    image: "/images/radar-feature.jpg",
+    alt: "BuildScope radar dashboard monitoring subcontractor matches in real time.",
   },
 ];
 
