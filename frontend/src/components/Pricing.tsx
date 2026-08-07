@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 const BTN =
   "transition duration-150 hover:brightness-110 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cyan)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]";
 
@@ -57,6 +59,10 @@ const TIERS: Tier[] = [
 ];
 
 export function Pricing() {
+  const [picked, setPicked] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState<string | null>(null);
+
   return (
     <section aria-labelledby="pricing-heading" className="mt-16">
       <div className="flex flex-wrap items-end gap-3">
@@ -110,16 +116,47 @@ export function Pricing() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              className={`mt-6 rounded-xl px-5 py-3 text-base font-bold ${
-                tier.featured
-                  ? "bg-[var(--cyan)] text-[#041018]"
-                  : "border border-[var(--line)] text-[var(--text)]"
-              } ${BTN}`}
-            >
-              {tier.cta}
-            </button>
+            {sent === tier.name ? (
+              <p className="mt-6 rounded-xl border border-[var(--ok)] bg-[rgba(52,211,153,0.1)] px-4 py-3 text-sm font-medium text-[var(--ok)]">
+                ✓ Sent — setup link is on its way to {email || "your inbox"}
+              </p>
+            ) : picked === tier.name ? (
+              <form
+                className="mt-6 flex gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSent(tier.name);
+                }}
+              >
+                <input
+                  type="email"
+                  required
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@company.com"
+                  className="min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-[var(--bg)] px-3 py-3 text-sm outline-none focus:border-[var(--cyan)]"
+                />
+                <button
+                  type="submit"
+                  className={`rounded-xl bg-[var(--cyan)] px-4 py-3 text-sm font-bold text-[#041018] ${BTN}`}
+                >
+                  Go →
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setPicked(tier.name)}
+                className={`mt-6 rounded-xl px-5 py-3 text-base font-bold ${
+                  tier.featured
+                    ? "bg-[var(--cyan)] text-[#041018]"
+                    : "border border-[var(--line)] text-[var(--text)]"
+                } ${BTN}`}
+              >
+                {tier.cta}
+              </button>
+            )}
           </div>
         ))}
       </div>
