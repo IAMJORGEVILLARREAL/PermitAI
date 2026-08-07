@@ -39,8 +39,8 @@ export function AppShell({
   const nav = role === "sub" ? SUB_NAV : GC_NAV;
 
   return (
-    <div className="flex min-h-screen">
-      <nav className="flex w-[232px] shrink-0 flex-col justify-between border-r border-hairline px-5 py-6">
+    <div className="min-h-screen">
+      <nav className="fixed inset-y-0 left-0 z-40 flex w-[232px] flex-col justify-between border-r border-hairline bg-paper px-5 py-6">
         <div>
           <Link href="/" aria-label="BuildScope home">
             <Wordmark size={15} />
@@ -86,7 +86,7 @@ export function AppShell({
         </div>
       </nav>
 
-      <main className="min-w-0 flex-1">
+      <main className="ml-[232px] min-w-0 min-h-screen">
         <header className="flex h-14 items-center justify-end border-b border-hairline px-10">
           <RoleToggle />
         </header>
