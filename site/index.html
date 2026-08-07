@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildScope - Construction scoping, bidding and permit compliance</title>
+<meta name="description" content="BuildScope reads your plan set, decomposes it into quantified bid packages, routes them to verified subcontractors, and keeps every permit on the record.">
+<meta name="theme-color" content="#F8F8F6">
+<meta property="og:title" content="BuildScope - Construction scoping, bidding and permit compliance">
+<meta property="og:description" content="BuildScope reads your plan set, decomposes it into quantified bid packages, routes them to verified subcontractors, and keeps every permit on the record.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="img/hero-site.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='7' y='7' width='18' height='18' fill='none' stroke='%23111111' stroke-width='3'/%3E%3Cline x1='0' y1='16' x2='32' y2='16' stroke='%23111111' stroke-width='2'/%3E%3Cline x1='16' y1='0' x2='16' y2='32' stroke='%23111111' stroke-width='2'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Sheet rail: persistent drawing-index wayfinding -->
+<nav class="sheetrail" aria-label="Sheet index">
+  <div class="sheetrail-inner">
+    <a class="tick" href="#loop"       data-rail="loop">A1</a>
+    <a class="tick" href="#scope"      data-rail="scope">A2</a>
+    <a class="tick" href="#groundtruth" data-rail="groundtruth">G0</a>
+    <a class="tick" href="#market"     data-rail="market">B1</a>
+    <a class="tick" href="#ledger"     data-rail="ledger">C1</a>
+    <a class="tick" href="#users"      data-rail="users">P1</a>
+    <a class="tick" href="#pricing"    data-rail="pricing">F1</a>
+    <a class="tick" href="#trust"      data-rail="trust">T1</a>
+  </div>
+</nav>
+
+<header class="nav" id="nav">
+  <div class="shell">
+    <a class="brand" href="#top" aria-label="BuildScope home">
+      <span class="glyph" aria-hidden="true"></span>
+      <span class="word">BuildScope</span>
+    </a>
+    <nav class="navlinks" aria-label="Primary">
+      <a href="#scope">Platform</a>
+      <a href="#market">Marketplace</a>
+      <a href="#ledger">Compliance</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-sm nav-cta" href="#request"><span class="tx">Request access</span><span class="pip" aria-hidden="true"></span></a>
+      <button class="menu-btn mono" id="menu-btn" aria-expanded="false" aria-controls="mobilenav">Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="mobilenav" id="mobilenav" hidden>
+  <nav aria-label="Mobile">
+    <a href="#scope"><span class="mono mi">A2</span>Platform</a>
+    <a href="#market"><span class="mono mi">B1</span>Marketplace</a>
+    <a href="#ledger"><span class="mono mi">C1</span>Compliance</a>
+    <a href="#pricing"><span class="mono mi">F1</span>Pricing</a>
+    <a class="btn" href="#request"><span class="tx">Request access</span><span class="pip" aria-hidden="true"></span></a>
+  </nav>
+</div>
+
+<main id="main">
+
+<!-- ===================================================== HERO ========== -->
+<section class="hero" id="top">
+  <div class="hero-grid" aria-hidden="true"></div>
+
+  <div class="shell hero-top">
+    <div class="hero-meta" data-rv>
+      <span class="mono">Scoping / Procurement / Compliance</span>
+      <span class="bar" aria-hidden="true"></span>
+      <span class="mono">Phoenix · Dallas · Atlanta</span>
+    </div>
+
+    <h1 class="d1" data-rv="mask">
+      <span class="line"><span class="li">Plans in.</span></span>
+      <span class="line"><span class="li dim">Contracts out.</span></span>
+    </h1>
+
+    <div class="hero-lower">
+      <p class="lede" data-rv style="transition-delay:170ms">
+        BuildScope reads your plan set, decomposes it into quantified bid packages,
+        and routes them to verified subcontractors.
+      </p>
+      <div class="hero-cta" data-rv style="transition-delay:240ms">
+        <a class="btn" href="#request"><span class="tx">Request access</span><span class="pip" aria-hidden="true"></span></a>
+        <a class="btn btn-ghost" href="#loop"><span class="tx">See the loop</span></a>
+      </div>
+    </div>
+  </div>
+
+  <figure class="plate hero-plate bleed" data-rv style="transition-delay:320ms">
+    <img src="img/hero-site.jpg" width="1024" height="683" fetchpriority="high"
+         alt="Early morning on a commercial jobsite: a concrete deck pour in progress inside a structural steel frame.">
+  </figure>
+</section>
+
+<!-- ================================================== MEASURED STRIP === -->
+<section class="strip">
+  <div class="shell">
+    <div class="strip-grid">
+      <div class="strip-cell" data-rv>
+        <div class="val"><span data-count="2">0</span><span class="unit">min</span></div>
+        <p class="mono lbl">50-sheet set classified and quantified</p>
+      </div>
+      <div class="strip-cell" data-rv style="transition-delay:60ms">
+        <div class="val"><span data-count="100">0</span><span class="unit">%</span></div>
+        <p class="mono lbl">Permit outputs linked to adopted code</p>
+      </div>
+      <div class="strip-cell" data-rv style="transition-delay:120ms">
+        <div class="val"><span data-count="4.5" data-dec="1">0</span><span class="unit">%</span></div>
+        <p class="mono lbl">Sub fee on award, capped at $2,000</p>
+      </div>
+      <div class="strip-cell" data-rv style="transition-delay:180ms">
+        <div class="val"><span data-count="8">0</span><span class="unit">trades</span></div>
+        <p class="mono lbl">Live at launch, from concrete to fire protection</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================== A1 / LOOP ==== -->
+<section class="sec pad" id="loop" data-sheet="loop">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">A1.01 / Intake</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:16ch">One pass from plan set to signed subcontract.</h2>
+
+    <div class="loop" style="margin-top:clamp(44px,6vw,92px)">
+      <article class="loop-step" data-step>
+        <div class="loop-head"><span class="dot" aria-hidden="true"></span><span class="no">01</span></div>
+        <div class="loop-line" aria-hidden="true"></div>
+        <div class="loop-body">
+          <h3 class="d4">Ingest the set</h3>
+          <p>Upload the full package. Sheets are classified and read, then the site address is overlaid with zoning, flood, wetland and historic-district data.</p>
+        </div>
+      </article>
+
+      <article class="loop-step" data-step>
+        <div class="loop-head"><span class="dot" aria-hidden="true"></span><span class="no">02</span></div>
+        <div class="loop-line" aria-hidden="true"></div>
+        <div class="loop-body">
+          <h3 class="d4">Decompose the scope</h3>
+          <p>Vision models detect walls, openings, fixtures, panels and structural members, then quantify them into packages by MasterFormat division.</p>
+        </div>
+      </article>
+
+      <article class="loop-step" data-step>
+        <div class="loop-head"><span class="dot" aria-hidden="true"></span><span class="no">03</span></div>
+        <div class="loop-line" aria-hidden="true"></div>
+        <div class="loop-body">
+          <h3 class="d4">Post the package</h3>
+          <p>You confirm the quantities and set a deadline. Matching ranks subcontractors on license, radius, bonding, capacity and prior performance.</p>
+        </div>
+      </article>
+
+      <article class="loop-step" data-step>
+        <div class="loop-head"><span class="dot" aria-hidden="true"></span><span class="no">04</span></div>
+        <div class="loop-line" aria-hidden="true"></div>
+        <div class="loop-body">
+          <h3 class="d4">Level and award</h3>
+          <p>Sealed bids open at the deadline. Compare them side by side, award, and the subcontract generates with the scope attached as an exhibit.</p>
+        </div>
+      </article>
+
+      <article class="loop-step" data-step>
+        <div class="loop-head"><span class="dot" aria-hidden="true"></span><span class="no">05</span></div>
+        <div class="loop-line" aria-hidden="true"></div>
+        <div class="loop-body">
+          <h3 class="d4">Track the permits</h3>
+          <p>On execution, that sub's trade permits enter the project ledger with their name on them. Nothing gets chased down after the fact.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== A2 / SCOPE ==== -->
+<section class="sec pad" id="scope" data-sheet="scope" style="background:var(--fog)">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">A2.01 / Scope</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:17ch">Every quantity points back to a line on the drawing.</h2>
+    <p class="body" data-rv style="transition-delay:70ms;margin-top:24px">
+      The takeoff is not a written summary. Each detection is a structured object with a type,
+      coordinates and a confidence score, so a quantity can always be traced to the geometry
+      that produced it.
+    </p>
+
+    <div class="studio">
+      <figure class="sheet" data-sheetfig>
+        <img src="img/plan-sheet.jpg" width="1024" height="683" loading="lazy"
+             alt="Architectural floor plan sheet with column grid, dimension strings and hatched wall sections.">
+        <svg viewBox="0 0 1024 683" preserveAspectRatio="none" aria-hidden="true">
+          <rect class="det"    x="105" y="372" width="235" height="164"/>
+          <rect class="det d2" x="276" y="108" width="148" height="112"/>
+          <rect class="det d3" x="700" y="204" width="226" height="152"/>
+          <rect class="det d4" x="658" y="364" width="202" height="156"/>
+
+          <g class="tag">
+            <rect class="tagbox" x="105" y="352" width="96" height="17"/>
+            <text class="tagtext" x="111" y="364">03 CONCRETE</text>
+          </g>
+          <g class="tag d2">
+            <rect class="tagbox" x="276" y="88" width="96" height="17"/>
+            <text class="tagtext" x="282" y="100">08 OPENINGS</text>
+          </g>
+          <g class="tag d3">
+            <rect class="tagbox" x="700" y="184" width="104" height="17"/>
+            <text class="tagtext" x="706" y="196">26 ELECTRICAL</text>
+          </g>
+          <g class="tag d4">
+            <rect class="tagbox" x="658" y="344" width="92" height="17"/>
+            <text class="tagtext" x="664" y="356">09 FINISHES</text>
+          </g>
+
+          <rect class="scan" x="0" y="0" width="2.5" height="683" data-scan/>
+        </svg>
+      </figure>
+
+      <div>
+        <table class="spec" data-rv style="transition-delay:120ms">
+          <caption class="vh">Illustrative scope packages extracted from one plan set</caption>
+          <thead>
+            <tr><th scope="col">Div</th><th scope="col">Package</th><th scope="col" style="text-align:right">Quantity</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="div">03</td><td>Slab on grade, 4 in.</td><td class="qty">3,480 SF</td></tr>
+            <tr><td class="div">03</td><td>Continuous footings</td><td class="qty">212 LF</td></tr>
+            <tr><td class="div">08</td><td>Hollow metal doors and frames</td><td class="qty">34 EA</td></tr>
+            <tr><td class="div">08</td><td>Aluminum storefront</td><td class="qty">486 SF</td></tr>
+            <tr><td class="div">09</td><td>Gypsum board partitions</td><td class="qty">5,140 SF</td></tr>
+            <tr><td class="div">26</td><td>Branch circuits, 20A</td><td class="qty">45 EA</td></tr>
+            <tr><td class="div">26</td><td>Service upgrade, 200A</td><td class="qty">1 EA</td></tr>
+          </tbody>
+        </table>
+        <div class="spec-foot" data-rv style="transition-delay:160ms">
+          <span class="mono">7 of 12 packages shown</span>
+          <span class="mono">Sample project · not customer data</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================ G0 / GROUND TRUTH == -->
+<section class="sec pad" id="groundtruth" data-sheet="groundtruth">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">G0.01 / Ground truth</span>
+    </div>
+
+    <div class="statement">
+      <h2 class="d2" data-rv="split">Generative models never write the permit list.</h2>
+      <p class="lede" data-rv style="transition-delay:70ms">
+        The list comes out of a deterministic rule graph. Scope tags go in, adopted code sections
+        come out, versioned and logged. Language models are confined to reading unstructured plan notes.
+      </p>
+
+      <div class="cite" data-rv style="transition-delay:130ms">
+        <span class="cite-mark" aria-hidden="true"></span>
+        <span class="cite-k"><span class="mono">Trigger</span></span>
+        <span class="cite-v">
+          <span class="ref">IBC 2021 §1705.3</span>
+          <span class="src">Special inspections, concrete. City of Phoenix, adopted 09 Jan 2024.</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <figure class="plate bleed" style="height:clamp(220px,34vh,420px);margin-top:clamp(64px,8vw,120px)" data-rv>
+    <img src="img/permit-packet.jpg" width="1024" height="576" loading="lazy"
+         alt="A rolled drawing set, a hard hat, a steel ruler and a stamped permit jacket on a plywood table.">
+    <figcaption class="mono plate-cap">Permit jacket, steel rule, marked set</figcaption>
+  </figure>
+</section>
+
+<!-- ==================================================== B1 / MARKET ==== -->
+<section class="sec pad" id="market" data-sheet="market">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">B1.01 / Market</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:16ch">Bids only from subs licensed to do the work.</h2>
+    <p class="body" data-rv style="transition-delay:70ms;margin-top:24px">
+      License, insurance, bonding capacity and work radius are checked against state boards before a
+      subcontractor can see a package, and re-checked monthly. Expired credentials suspend marketplace
+      access without anyone having to notice.
+    </p>
+
+    <table class="spec" data-rv style="transition-delay:120ms;margin-top:clamp(40px,5vw,72px)">
+      <caption class="vh">Illustrative bid leveling table for one scope package</caption>
+      <thead>
+        <tr>
+          <th scope="col">Subcontractor</th>
+          <th scope="col" style="width:7rem">Rating</th>
+          <th scope="col" style="width:9rem">Prior work</th>
+          <th scope="col" style="width:9rem;text-align:right">Sealed bid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Terraline Concrete Works</td>
+          <td><span class="mono-num" style="font-size:.82rem">4.4</span></td>
+          <td><span class="mono" style="letter-spacing:.1em">3 projects</span></td>
+          <td class="qty"><span data-count="178900" data-fmt="usd">$0</span></td>
+        </tr>
+        <tr>
+          <td>Cordero Structural</td>
+          <td><span class="mono-num" style="font-size:.82rem">4.8</span></td>
+          <td><span class="mono" style="letter-spacing:.1em">11 projects</span></td>
+          <td class="qty"><span data-count="184200" data-fmt="usd">$0</span></td>
+        </tr>
+        <tr>
+          <td>Halvorsen Brothers</td>
+          <td><span class="mono-num" style="font-size:.82rem">4.6</span></td>
+          <td><span class="mono" style="letter-spacing:.1em">7 projects</span></td>
+          <td class="qty"><span data-count="191750" data-fmt="usd">$0</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="spec-foot" data-rv style="transition-delay:160ms">
+      <span class="mono">Div 03 · slab and footings · sealed until deadline</span>
+      <span class="mono">Sample data</span>
+    </div>
+  </div>
+</section>
+
+<!-- ==================================================== C1 / LEDGER ==== -->
+<section class="sec pad" id="ledger" data-sheet="ledger" style="background:var(--fog)">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">C1.01 / Ledger</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:15ch">Every permit has a name on it.</h2>
+    <p class="body" data-rv style="transition-delay:70ms;margin-top:24px">
+      The moment a subcontract is executed, that trade's permits are added to the project ledger with the
+      sub named as responsible party. Every status change is timestamped and cannot be edited afterward.
+    </p>
+
+    <div class="ledger" data-rv style="transition-delay:120ms;margin-top:clamp(40px,5vw,72px)">
+      <div class="ledger-row">
+        <span class="pid">PMT-24-08811</span>
+        <span class="what">Building permit, tenant improvement</span>
+        <span class="who">Meridian Builders</span>
+        <span class="state is-done"><span class="sq" aria-hidden="true"></span>Obtained</span>
+      </div>
+      <div class="ledger-row">
+        <span class="pid">PMT-24-08812</span>
+        <span class="what">Electrical, 200A service upgrade</span>
+        <span class="who">Vance Electric Co.</span>
+        <span class="state is-live"><span class="sq" aria-hidden="true"></span>In progress</span>
+      </div>
+      <div class="ledger-row">
+        <span class="pid">PMT-24-08814</span>
+        <span class="what">Mechanical, rooftop unit replacement</span>
+        <span class="who">Ardmore Mechanical</span>
+        <span class="state is-open"><span class="sq" aria-hidden="true"></span>Acknowledged</span>
+      </div>
+      <div class="ledger-row">
+        <span class="pid">PMT-24-08817</span>
+        <span class="what">Fire protection, sprinkler main relocation</span>
+        <span class="who">Not yet awarded</span>
+        <span class="state"><span class="sq" aria-hidden="true"></span>Required</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== P1 / USERS ==== -->
+<section class="sec pad" id="users" data-sheet="users">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">P1.01 / Users</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:14ch;margin-bottom:clamp(40px,5vw,72px)">Two sides. One record.</h2>
+
+    <div class="sides">
+      <article class="side" data-rv>
+        <figure class="plate">
+          <img src="img/persona-gc.jpg" width="1024" height="683" loading="lazy"
+               alt="A general contractor standing in a partially framed building interior in morning light.">
+          <figcaption class="mono plate-cap">General contractor</figcaption>
+        </figure>
+        <h3 class="d3">Stop scoping by hand.</h3>
+        <p class="body">
+          Days of manual takeoff and the same five phone calls collapse into one upload and a bid table.
+          You see who bid, what they charge, and how they have performed on work you can verify.
+        </p>
+        <dl class="ledger" style="margin-top:26px;border-top-color:var(--rule-hard)">
+          <div class="ledger-row" style="grid-template-columns:7rem 1fr">
+            <dt class="pid">Today</dt><dd class="who" style="margin:0">Email PDFs to known subs, level bids in a spreadsheet</dd>
+          </div>
+          <div class="ledger-row" style="grid-template-columns:7rem 1fr;border-bottom:0">
+            <dt class="pid">Instead</dt><dd class="who" style="margin:0;color:var(--carbon)">Post a package, compare verified bids side by side</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="side" data-rv style="transition-delay:90ms">
+        <figure class="plate">
+          <img src="img/hands-plans.jpg" width="1024" height="683" loading="lazy"
+               alt="Hands marking quantities on a drawing set with a pencil and scale rule.">
+          <figcaption class="mono plate-cap">Subcontractor</figcaption>
+        </figure>
+        <h3 class="d3">Bid what is already measured.</h3>
+        <p class="body">
+          You get the sheets that matter with the counts already extracted, instead of a hundred-page set
+          to dig through. Free to receive work. You pay only on the jobs you win.
+        </p>
+        <dl class="ledger" style="margin-top:26px;border-top-color:var(--rule-hard)">
+          <div class="ledger-row" style="grid-template-columns:7rem 1fr">
+            <dt class="pid">Today</dt><dd class="who" style="margin:0">Hours of takeoff each week on bids you lose</dd>
+          </div>
+          <div class="ledger-row" style="grid-template-columns:7rem 1fr;border-bottom:0">
+            <dt class="pid">Instead</dt><dd class="who" style="margin:0;color:var(--carbon)">Pre-extracted package, 4.5% only when you win</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== F1 / PRICING ==== -->
+<section class="sec pad" id="pricing" data-sheet="pricing">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">F1.01 / Terms</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:16ch">Subscription for GCs. Success fee for subs.</h2>
+
+    <div class="tiers" data-rv style="transition-delay:70ms;margin-top:clamp(40px,5vw,72px)">
+      <div class="tier">
+        <div class="name"><span class="d4">Pro</span></div>
+        <p class="inc">Up to 5 active projects. Plan analysis, scope decomposition, permit roadmap, marketplace posting.</p>
+        <div class="price">$499<span class="per">/mo</span></div>
+        <a class="btn btn-ghost btn-sm act" href="#request"><span class="tx">Request access</span></a>
+      </div>
+      <div class="tier is-pick">
+        <div class="name"><span class="d4">Business</span><span class="mono">Most chosen</span></div>
+        <p class="inc">Up to 25 active projects. Adds subcontractor management, white-labeled bid packages and code change monitoring.</p>
+        <div class="price">$1,299<span class="per">/mo</span></div>
+        <a class="btn btn-sm act" href="#request"><span class="tx">Request access</span><span class="pip" aria-hidden="true"></span></a>
+      </div>
+      <div class="tier">
+        <div class="name"><span class="d4">Enterprise</span></div>
+        <p class="inc">Unlimited projects. API access, single sign-on, dedicated success manager, Procore and Autodesk integrations.</p>
+        <div class="price">Custom</div>
+        <a class="btn btn-ghost btn-sm act" href="#request"><span class="tx">Contact sales</span></a>
+      </div>
+    </div>
+    <p class="mono" data-rv style="margin-top:16px">Billed annually · General contractors and developers</p>
+
+    <div class="subs" data-rv style="transition-delay:120ms">
+      <div>
+        <p class="mono k">Subcontractor</p>
+        <p class="v">Free</p>
+        <p class="n">Receive matched invitations, submit sealed bids, manage awarded contracts and permit acknowledgements.</p>
+      </div>
+      <div>
+        <p class="mono k">Sub Pro</p>
+        <p class="v">$149<span style="font-size:.44em;color:var(--concrete)">/mo</span></p>
+        <p class="n">Priority placement in search, instant alerts on matching trades, and historical pricing analytics.</p>
+      </div>
+      <div>
+        <p class="mono k">On award</p>
+        <p class="v">4.5%</p>
+        <p class="n">Of awarded subcontract value, capped at $2,000 per contract. Charged only when the work is won.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== T1 / TRUST ==== -->
+<section class="sec pad" id="trust" data-sheet="trust" style="background:var(--fog)">
+  <div class="shell">
+    <div class="sec-rule" data-rv="rule">
+      <span></span>
+      <span class="mono ref">T1.01 / Trust</span>
+    </div>
+
+    <h2 class="d2" data-rv="split" style="max-width:16ch;margin-bottom:clamp(40px,5vw,72px)">What the output is, and what it is not.</h2>
+
+    <div class="titleblock" data-rv style="transition-delay:70ms">
+      <div class="tb-cell">
+        <span class="mono k">Rules engine</span>
+        <h4 class="d4">Deterministic, not generated</h4>
+        <p>Permit requirements execute against a versioned rule graph. Generative models are confined to interpreting unstructured plan notes.</p>
+      </div>
+      <div class="tb-cell">
+        <span class="mono k">Citations</span>
+        <h4 class="d4">Linked to adopted code</h4>
+        <p>Every requirement carries its issuing authority, the scope tag that triggered it, and a link to the municipal section in force.</p>
+      </div>
+      <div class="tb-cell">
+        <span class="mono k">Audit log</span>
+        <h4 class="d4">Immutable and versioned</h4>
+        <p>Every user action, contract event and rule version used is recorded, and cannot be rewritten after the fact.</p>
+      </div>
+      <div class="tb-cell">
+        <span class="mono k">Isolation</span>
+        <h4 class="d4">Walled between tenants</h4>
+        <p>Bids, contract values and pricing never cross between competing organizations. Enterprise adds dedicated schema isolation.</p>
+      </div>
+      <div class="tb-cell">
+        <span class="mono k">Encryption</span>
+        <h4 class="d4">AES-256 and TLS 1.3</h4>
+        <p>Data is encrypted at rest and in transit. SOC 2 Type II certification is targeted within twelve months of launch.</p>
+      </div>
+      <div class="tb-cell">
+        <span class="mono k">Standing</span>
+        <h4 class="d4">A draft for validation</h4>
+        <p>Output is an advisory draft for professional review. BuildScope is not a licensed design, engineering or legal service.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================================================= CLOSE + FOOTER ==== -->
+<div class="dark">
+  <section class="shell" id="request">
+    <div class="close-in">
+      <div>
+        <h2 class="d2" data-rv="split">Find out at bid time, not at inspection.</h2>
+        <p class="lede" data-rv style="transition-delay:70ms;margin-top:24px">
+          Send one plan set. We return quantified scope packages and a source-linked permit roadmap.
+        </p>
+      </div>
+
+      <form class="signup" data-rv style="transition-delay:130ms" novalidate>
+        <div class="field">
+          <label for="email">Work email</label>
+          <input id="email" name="email" type="email" autocomplete="email"
+                 placeholder="you@company.com" required aria-describedby="form-msg">
+        </div>
+        <button class="btn btn-invert" type="submit"><span class="tx">Request access</span><span class="pip" aria-hidden="true"></span></button>
+        <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+        <p class="note">Onboarding in Phoenix, Dallas and Atlanta. Other metros join the queue.</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="shell foot">
+    <div class="foot-grid">
+      <div>
+        <span class="brand" style="margin-bottom:16px">
+          <span class="glyph" aria-hidden="true"></span>
+          <span class="word">BuildScope</span>
+        </span>
+        <p style="font-size:.86rem;color:var(--concrete);max-width:32ch;margin-top:14px">
+          Scoping, procurement and permit compliance for commercial general contractors.
+        </p>
+      </div>
+      <div>
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="#scope">Scope decomposition</a></li>
+          <li><a href="#groundtruth">Permit roadmap</a></li>
+          <li><a href="#market">Marketplace</a></li>
+          <li><a href="#ledger">Compliance ledger</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#top">About</a></li>
+          <li><a href="#top">Careers</a></li>
+          <li><a href="#top">Press</a></li>
+          <li><a href="#request">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#top">Terms of service</a></li>
+          <li><a href="#top">Privacy</a></li>
+          <li><a href="#top">Non-circumvention</a></li>
+          <li><a href="#trust">Security</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <p>
+        BuildScope output is an AI-generated advisory draft for professional validation. It is not a
+        licensed design, engineering or legal service, and does not replace review by a qualified
+        professional or the authority having jurisdiction.
+      </p>
+      <span class="mono rev">© 2026 BuildScope · Doc rev 1.0</span>
+    </div>
+  </footer>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
