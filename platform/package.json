@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3100",
+    "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start --port 3100",
+    "start": "next start --port 3000",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.ts",

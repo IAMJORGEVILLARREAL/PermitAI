@@ -63,12 +63,12 @@ export function LandingNav() {
           >
             Sign in
           </Link>
-          <a
-            href="#request"
+          <Link
+            href="/login"
             className="relative inline-flex h-9 items-center bg-carbon px-4 pl-5 text-[13px] font-medium text-white transition-[background-color,transform] duration-[100ms] ease-[cubic-bezier(0.2,0,0,1)] before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-lime hover:bg-graphite active:translate-y-px"
           >
-            Request access
-          </a>
+            Open demo
+          </Link>
           <button
             type="button"
             className="ml-1 inline-flex h-9 items-center px-2 font-mono text-[10px] uppercase tracking-[0.12em] text-steel md:hidden"
