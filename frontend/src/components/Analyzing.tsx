@@ -1,32 +1,41 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ANALYZE_STAGES, MOCK_ANALYSIS } from "@/data/mockAnalysis";
+import { ANALYZE_STAGES } from "@/data/mockAnalysis";
 
 const TOTAL_MS = 3000;
 const STAGE_MS = 650;
-const SCOPE_TAGS = MOCK_ANALYSIS.scopeTags;
 
 type Props = {
   fileName: string;
+  detectedAddress: string;
+  scopeTags: string[];
   onDone: () => void;
 };
 
-export function Analyzing({ fileName, onDone }: Props) {
+export function Analyzing({
+  fileName,
+  detectedAddress,
+  scopeTags,
+  onDone,
+}: Props) {
   const [stage, setStage] = useState(0);
   const [visibleTags, setVisibleTags] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [addressFound, setAddressFound] = useState(false);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
     const start = Date.now();
 
+    timers.push(setTimeout(() => setAddressFound(true), 900));
+
     for (let i = 1; i < ANALYZE_STAGES.length; i++) {
       timers.push(setTimeout(() => setStage(i), i * STAGE_MS));
     }
 
-    const tagInterval = TOTAL_MS / (SCOPE_TAGS.length + 1);
-    for (let i = 0; i < SCOPE_TAGS.length; i++) {
+    const tagInterval = TOTAL_MS / (scopeTags.length + 1);
+    for (let i = 0; i < scopeTags.length; i++) {
       timers.push(setTimeout(() => setVisibleTags(i + 1), 500 + i * tagInterval));
     }
 
@@ -43,7 +52,7 @@ export function Analyzing({ fileName, onDone }: Props) {
       timers.forEach(clearTimeout);
       clearInterval(progressTick);
     };
-  }, [onDone]);
+  }, [onDone, scopeTags]);
 
   return (
     <section className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 py-16 text-center">
@@ -59,10 +68,25 @@ export function Analyzing({ fileName, onDone }: Props) {
         Analyzing {fileName}
       </h1>
       <p className="mt-2 text-[var(--muted)]">
-        Phoenix regulatory graph · marketplace match
+        Reading sheets · regulatory graph · local trade match
       </p>
 
-      <div className="mt-8 h-2.5 w-full max-w-md overflow-hidden rounded-full bg-[rgba(56,189,248,0.12)]">
+      <div
+        className={`mt-6 w-full max-w-md rounded-xl border px-4 py-3 text-left transition-all duration-500 ${
+          addressFound
+            ? "border-[rgba(52,211,153,0.4)] bg-[rgba(52,211,153,0.08)] opacity-100"
+            : "border-[var(--line)] opacity-40"
+        }`}
+      >
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-[var(--muted)]">
+          Project address from plans
+        </div>
+        <div className="mt-1 font-semibold">
+          {addressFound ? detectedAddress : "Locating title block…"}
+        </div>
+      </div>
+
+      <div className="mt-6 h-2.5 w-full max-w-md overflow-hidden rounded-full bg-[rgba(56,189,248,0.12)]">
         <div
           className="h-full rounded-full bg-gradient-to-r from-[var(--cyan)] to-[var(--teal)] transition-[width] duration-150 ease-out"
           style={{ width: `${progress}%` }}

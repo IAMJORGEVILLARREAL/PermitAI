@@ -11,6 +11,7 @@ const BTN_GHOST =
 
 type Props = {
   data: AnalysisResult;
+  projectZip?: string;
   onRestart: () => void;
 };
 
@@ -32,6 +33,11 @@ function StarRating({ rating }: { rating: number }) {
       </span>
     </span>
   );
+}
+
+function cityFromAddress(address: string): string {
+  const parts = address.split(",").map((part) => part.trim());
+  return parts.length >= 2 ? parts[parts.length - 2] : address;
 }
 
 function flattenDocuments(permits: Permit[]): FlatDocument[] {
@@ -66,11 +72,11 @@ function sortContractors(
   }
 }
 
-export function Results({ data, onRestart }: Props) {
+export function Results({ data, projectZip, onRestart }: Props) {
   const [invited, setInvited] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<string | null>(null);
   const [readyDocs, setReadyDocs] = useState<Record<string, boolean>>({});
-  const [zipCode, setZipCode] = useState("85006");
+  const [zipCode, setZipCode] = useState(projectZip ?? "85006");
   const [radius, setRadius] = useState<RadiusOption>(30);
   const [sortMode, setSortMode] = useState<SortMode>("rating");
 
@@ -164,7 +170,7 @@ export function Results({ data, onRestart }: Props) {
           <div>
             <h2 className="display text-2xl font-bold">Permits & Approvals</h2>
             <p className="mt-1 text-sm text-[var(--muted)]">
-              Required for Phoenix ·{" "}
+              Required for {cityFromAddress(data.address)} ·{" "}
               <span className="stat-num">{data.permits.length}</span> permits
             </p>
           </div>
@@ -255,7 +261,7 @@ export function Results({ data, onRestart }: Props) {
           </div>
         </div>
 
-        <ul className="space-y-2">
+        <ul className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
           {documents.map((doc, i) => {
             const isReady = !!readyDocs[doc.name];
             return (
@@ -287,8 +293,8 @@ export function Results({ data, onRestart }: Props) {
                   >
                     {doc.name}
                   </div>
-                  <p className="mt-0.5 text-xs text-[var(--muted)]">
-                    Required by: {doc.permits.join(" · ")}
+                  <p className="mt-0.5 truncate text-xs text-[var(--muted)]">
+                    {doc.permits.join(" · ")}
                   </p>
                 </div>
               </li>

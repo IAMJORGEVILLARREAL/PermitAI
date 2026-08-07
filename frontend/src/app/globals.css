@@ -72,6 +72,20 @@ h1 {
   }
 }
 
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 28px rgba(56, 189, 248, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 44px rgba(56, 189, 248, 0.7);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
 @keyframes rise {
   from {
     opacity: 0;

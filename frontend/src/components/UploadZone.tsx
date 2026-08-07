@@ -5,6 +5,17 @@ import { DEMO_SCENARIOS } from "@/data/mockAnalysis";
 
 const DEFAULT_SCENARIO = DEMO_SCENARIOS[0];
 
+const SCENARIO_ZIPS: Record<string, string> = {
+  "miami-multifamily": "33130",
+  "phoenix-ti": "85006",
+  "austin-restaurant": "78702",
+  "denver-adu": "80211",
+};
+
+function zipFor(scenarioId: string): string {
+  return SCENARIO_ZIPS[scenarioId] ?? "85006";
+}
+
 const BTN =
   "transition duration-150 hover:brightness-110 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cyan)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]";
 
@@ -15,7 +26,7 @@ function formatSize(bytes: number): string {
 }
 
 type Props = {
-  onAnalyze: (fileName: string, scenarioId?: string) => void;
+  onAnalyze: (fileName: string, zip: string) => void;
   onBack: () => void;
 };
 
@@ -29,13 +40,7 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
     setFile({ name: next.name, size: next.size });
   }, []);
 
-  const useDemo = () => {
-    setFile({
-      name: DEFAULT_SCENARIO.fileName,
-      size: 4_200_000,
-    });
-    onAnalyze(DEFAULT_SCENARIO.fileName, DEFAULT_SCENARIO.id);
-  };
+  const openPicker = useCallback(() => inputRef.current?.click(), []);
 
   return (
     <section className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-8">
@@ -51,35 +56,30 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
         Upload project plans
       </h1>
       <p className="mt-3 text-[var(--muted)]">
-        PDF, DWG, RVT, or images — or use the demo plan set for live demos.
+        Drop the plan set. We read the address off the drawings and pull the
+        right permits and local crews.
       </p>
 
-      <button
-        type="button"
-        onClick={useDemo}
-        className={`mt-8 flex w-full items-center justify-center gap-3 rounded-xl border-2 border-[var(--teal)] bg-[rgba(45,212,191,0.1)] px-6 py-4 text-base font-semibold text-[var(--teal)] hover:bg-[rgba(45,212,191,0.18)] ${BTN}`}
-      >
-        <span className="text-xl">⚡</span>
-        Use demo plan set
-        <span className="text-xs font-normal text-[var(--muted)]">
-          (recommended for demo)
-        </span>
-      </button>
-
-      <div className="my-6 flex items-center gap-4 text-xs uppercase tracking-widest text-[var(--muted)]">
-        <span className="h-px flex-1 bg-[var(--line)]" />
-        or upload your own
-        <span className="h-px flex-1 bg-[var(--line)]" />
-      </div>
+      {/* Kept outside the drop zone: a click from inside it would bubble back
+          and re-trigger openPicker, which makes Chrome suppress the dialog. */}
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        onChange={(e) => {
+          takeFile(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
 
       <div
         role="button"
         tabIndex={0}
-        onClick={() => inputRef.current?.click()}
+        onClick={openPicker}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            inputRef.current?.click();
+            openPicker();
           }
         }}
         onDragEnter={(e) => {
@@ -100,20 +100,14 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
           setDragging(false);
           takeFile(e.dataTransfer.files?.[0]);
         }}
-        className={`flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed bg-[var(--panel)] p-8 text-center transition duration-200 ${
+        className={`mt-6 flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed bg-[var(--panel)] p-8 text-center transition duration-200 ${
           dragging
             ? "scale-[1.01] border-[var(--teal)] bg-[rgba(45,212,191,0.12)] shadow-[0_0_32px_rgba(45,212,191,0.15)]"
             : "border-[var(--line)] hover:border-[var(--cyan)] hover:bg-[rgba(56,189,248,0.04)]"
         }`}
       >
-        <input
-          ref={inputRef}
-          type="file"
-          className="hidden"
-          onChange={(e) => takeFile(e.target.files?.[0])}
-        />
         <div
-          className={`mb-4 text-4xl transition duration-200 ${dragging ? "scale-110 text-[var(--teal)]" : "text-[var(--cyan)]"}`}
+          className={`mb-3 text-4xl transition duration-200 ${dragging ? "scale-110 text-[var(--teal)]" : "text-[var(--cyan)]"}`}
         >
           ⬆
         </div>
@@ -121,38 +115,66 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
           {file ? file.name : "Drop plan set here"}
         </div>
         <div className="mt-2 text-sm text-[var(--muted)]">
-          {file ? formatSize(file.size) : "drag a file, or use the button below"}
+          {file ? formatSize(file.size) : "PDF · DWG · RVT · images"}
         </div>
-        <span
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            openPicker();
+          }}
           className={`mt-5 rounded-lg border border-[var(--cyan)] px-5 py-2.5 text-sm font-semibold text-[var(--cyan)] hover:bg-[rgba(56,189,248,0.1)] ${BTN}`}
         >
-          Browse files
-        </span>
+          {file ? "Choose a different file" : "Browse files"}
+        </button>
       </div>
-
-      {file && (
-        <div className="animate-rise mt-4 flex items-center gap-3 rounded-xl border border-[rgba(52,211,153,0.35)] bg-[rgba(52,211,153,0.08)] px-4 py-3 text-sm text-[var(--ok)]">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--ok)] text-xs font-bold text-[#042014]">
-            ✓
-          </span>
-          <span>
-            Ready: <span className="font-semibold">{file.name}</span>
-            <span className="text-[var(--muted)]"> · {formatSize(file.size)}</span>
-          </span>
-        </div>
-      )}
 
       <button
         type="button"
         disabled={!file}
-        onClick={() => file && onAnalyze(file.name)}
-        className={`mt-8 rounded-xl px-8 py-4 text-base font-semibold transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cyan)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 ${
+        onClick={() => file && onAnalyze(file.name, "")}
+        className={`mt-6 rounded-xl px-8 py-5 text-lg font-bold transition disabled:cursor-not-allowed ${
           file
-            ? "bg-[var(--cyan)] text-[#041018] shadow-[0_0_28px_rgba(56,189,248,0.4)] hover:brightness-110 active:scale-[0.97]"
-            : "bg-[var(--cyan)] text-[#041018]"
+            ? "animate-pulse-glow bg-[var(--cyan)] text-[#041018] shadow-[0_0_36px_rgba(56,189,248,0.55)]"
+            : "border border-[var(--line)] bg-transparent text-[var(--muted)]"
         } ${BTN}`}
       >
-        Run AI Analysis →
+        {file ? "Analyze →" : "Add a file to analyze"}
+      </button>
+
+      <div className="my-6 flex items-center gap-4 text-xs uppercase tracking-widest text-[var(--muted)]">
+        <span className="h-px flex-1 bg-[var(--line)]" />
+        or run a saved project
+        <span className="h-px flex-1 bg-[var(--line)]" />
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        {DEMO_SCENARIOS.map((scenario) => (
+          <button
+            key={scenario.id}
+            type="button"
+            onClick={() => onAnalyze(scenario.fileName, zipFor(scenario.id))}
+            className={`rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4 text-left hover:border-[var(--teal)] hover:bg-[rgba(45,212,191,0.08)] ${BTN}`}
+          >
+            <div className="text-xs uppercase tracking-wide text-[var(--teal)]">
+              {scenario.city}
+            </div>
+            <div className="mt-1 font-semibold">{scenario.label}</div>
+            <div className="mt-1 text-xs text-[var(--muted)]">
+              {scenario.blurb}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() =>
+          onAnalyze(DEFAULT_SCENARIO.fileName, zipFor(DEFAULT_SCENARIO.id))
+        }
+        className={`mt-4 rounded-xl border-2 border-[var(--teal)] bg-[rgba(45,212,191,0.1)] px-6 py-3 text-sm font-semibold text-[var(--teal)] hover:bg-[rgba(45,212,191,0.18)] ${BTN}`}
+      >
+        ⚡ Use demo plan set — {DEFAULT_SCENARIO.city}
       </button>
     </section>
   );
