@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DEMO_SCENARIOS } from "@/data/mockAnalysis";
 
 const DEFAULT_SCENARIO = DEMO_SCENARIOS[0];
@@ -19,6 +19,25 @@ function zipFor(scenarioId: string): string {
 const BTN =
   "transition duration-150 hover:brightness-110 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cyan)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]";
 
+/** Names the shared plan set from a URL so the analysis reads the same either way. */
+function parseLink(raw: string): { host: string; name: string } | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(
+      /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`,
+    );
+    if (!url.hostname.includes(".")) return null;
+    const lastSegment = url.pathname.split("/").filter(Boolean).pop();
+    return {
+      host: url.hostname.replace(/^www\./, ""),
+      name: decodeURIComponent(lastSegment || url.hostname),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -32,6 +51,7 @@ type Props = {
 
 export function UploadZone({ onAnalyze, onBack }: Props) {
   const [file, setFile] = useState<{ name: string; size: number } | null>(null);
+  const [link, setLink] = useState("");
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +61,25 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
   }, []);
 
   const openPicker = useCallback(() => inputRef.current?.click(), []);
+
+  const linkSource = useMemo(() => parseLink(link), [link]);
+  const source = file
+    ? { name: file.name }
+    : linkSource
+      ? { name: linkSource.name }
+      : null;
+
+  // A file released outside the drop zone would otherwise make the browser
+  // navigate to it, losing the app mid-presentation.
+  useEffect(() => {
+    const block = (e: DragEvent) => e.preventDefault();
+    window.addEventListener("dragover", block);
+    window.addEventListener("drop", block);
+    return () => {
+      window.removeEventListener("dragover", block);
+      window.removeEventListener("drop", block);
+    };
+  }, []);
 
   return (
     <section className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-8">
@@ -56,8 +95,8 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
         Upload project plans
       </h1>
       <p className="mt-3 text-[var(--muted)]">
-        Drop the plan set. We read the address off the drawings and pull the
-        right permits and local crews.
+        Drop the plan set or paste a link to it. We read the address off the
+        drawings and pull the right permits and local crews.
       </p>
 
       {/* Kept outside the drop zone: a click from inside it would bubble back
@@ -129,17 +168,41 @@ export function UploadZone({ onAnalyze, onBack }: Props) {
         </button>
       </div>
 
+      <div className="mt-5">
+        <label
+          htmlFor="plan-link"
+          className="text-sm font-semibold text-[var(--muted)]"
+        >
+          Or paste a link to the plans
+        </label>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <input
+            id="plan-link"
+            type="url"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            placeholder="Dropbox, Google Drive, plan room…"
+            className="min-w-[260px] flex-1 rounded-xl border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-base text-[var(--text)] outline-none transition placeholder:text-[rgba(147,164,195,0.5)] focus:border-[var(--cyan)] focus:shadow-[0_0_0_3px_rgba(56,189,248,0.15)]"
+          />
+          {linkSource && (
+            <span className="self-center rounded-lg bg-[rgba(52,211,153,0.12)] px-3 py-2 text-sm font-medium text-[var(--ok)]">
+              ✓ {linkSource.host}
+            </span>
+          )}
+        </div>
+      </div>
+
       <button
         type="button"
-        disabled={!file}
-        onClick={() => file && onAnalyze(file.name, "")}
+        disabled={!source}
+        onClick={() => source && onAnalyze(source.name, "")}
         className={`mt-6 rounded-xl px-8 py-5 text-lg font-bold transition disabled:cursor-not-allowed ${
-          file
+          source
             ? "animate-pulse-glow bg-[var(--cyan)] text-[#041018] shadow-[0_0_36px_rgba(56,189,248,0.55)]"
             : "border border-[var(--line)] bg-transparent text-[var(--muted)]"
         } ${BTN}`}
       >
-        {file ? "Analyze →" : "Add a file to analyze"}
+        {source ? "Analyze →" : "Add a file or link to analyze"}
       </button>
 
       <div className="my-6 flex items-center gap-4 text-xs uppercase tracking-widest text-[var(--muted)]">

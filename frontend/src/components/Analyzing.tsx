@@ -106,7 +106,7 @@ export function Analyzing({
           Detected scope
         </div>
         <div className="flex min-h-[72px] flex-wrap gap-1.5">
-          {SCOPE_TAGS.slice(0, visibleTags).map((tag) => (
+          {scopeTags.slice(0, visibleTags).map((tag) => (
             <span
               key={tag}
               className="animate-tag-pop inline-flex items-center gap-1 rounded-md border border-[rgba(52,211,153,0.35)] bg-[rgba(52,211,153,0.1)] px-2 py-0.5 font-mono text-[11px] text-[var(--ok)]"

@@ -13,7 +13,7 @@ export function Landing({ onStart }: Props) {
 
       <p className="mt-6 max-w-xl text-lg text-[var(--muted)] md:text-xl">
         Upload your plans — we scope every permit and document you need, then
-        match you with rated local subcontractors near your ZIP.
+        match you with rated local subcontractors near your project site.
       </p>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3 text-xs text-[var(--muted)]">
