@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#f4f7fb"/>
+  <rect x="40" y="40" width="1120" height="720" fill="none" stroke="#1e3a5f" stroke-width="3"/>
+  <text x="60" y="80" font-family="Georgia, serif" font-size="28" fill="#1e3a5f">Brickell Office TI - Level 2 Floor Plan (Sample)</text>
+  <text x="60" y="110" font-family="ui-sans-serif, system-ui" font-size="14" fill="#5b6b7c">BuildScope AI demo sheet - Miami, FL - not a real construction document</text>
+
+  <rect x="120" y="160" width="420" height="280" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="140" y="190" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">OPEN OFFICE</text>
+  <text x="140" y="220" font-family="ui-sans-serif, system-ui" font-size="12" fill="#718096">3,500 SF - new partitions</text>
+
+  <rect x="540" y="160" width="220" height="160" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="560" y="190" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">CONF A</text>
+
+  <rect x="760" y="160" width="220" height="160" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="780" y="190" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">CONF B</text>
+
+  <rect x="540" y="340" width="440" height="100" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="560" y="380" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">CORRIDOR / EGRESS</text>
+
+  <rect x="120" y="460" width="200" height="180" fill="#edf2f7" stroke="#c05621" stroke-width="2"/>
+  <text x="140" y="500" font-family="ui-sans-serif, system-ui" font-size="16" fill="#c05621">ELEC</text>
+  <text x="140" y="530" font-family="ui-sans-serif, system-ui" font-size="12" fill="#c05621">200A panel upgrade</text>
+  <circle cx="220" cy="580" r="18" fill="none" stroke="#c05621" stroke-width="3"/>
+  <text x="214" y="586" font-family="ui-sans-serif, system-ui" font-size="14" fill="#c05621">E</text>
+
+  <rect x="340" y="460" width="280" height="180" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="360" y="500" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">BREAK / WET</text>
+  <text x="360" y="530" font-family="ui-sans-serif, system-ui" font-size="12" fill="#718096">ceramic tile - plumbing relocates</text>
+
+  <rect x="640" y="460" width="340" height="180" fill="#fff" stroke="#2c5282" stroke-width="2"/>
+  <text x="660" y="500" font-family="ui-sans-serif, system-ui" font-size="16" fill="#2c5282">LOBBY STOREFRONT</text>
+  <text x="660" y="530" font-family="ui-sans-serif, system-ui" font-size="12" fill="#718096">240 SF aluminum openings</text>
+
+  <line x1="120" y1="160" x2="120" y2="640" stroke="#e53e3e" stroke-width="3" stroke-dasharray="8 6"/>
+  <text x="90" y="700" font-family="ui-sans-serif, system-ui" font-size="12" fill="#e53e3e">AI overlay: structural / MEP triggers</text>
+</svg>
