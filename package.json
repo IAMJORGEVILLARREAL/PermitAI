@@ -1,10 +1,37 @@
 {
-  "name": "permitai",
+  "name": "buildscope-platform",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "npm run dev --prefix platform",
-    "build": "npm run build --prefix platform",
-    "start": "npm run start --prefix platform",
-    "lint": "npm run lint --prefix platform"
+    "prebuild": "node scripts/sync-from-platform.mjs",
+    "build": "next build",
+    "start": "next start",
+    "postinstall": "prisma generate || true",
+    "lint": "npm run lint --prefix platform",
+    "db:push": "npm run db:push --prefix platform",
+    "db:seed": "npm run db:seed --prefix platform",
+    "db:reset": "npm run db:reset --prefix platform",
+    "db:studio": "npm run db:studio --prefix platform"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "clsx": "^2.1.1",
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
