@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Disclaimer } from "@/components/Disclaimer";
 import type { AnalysisResult, Permit, Subcontractor } from "@/lib/types";
 
@@ -74,29 +74,38 @@ function flattenDocuments(permits: Permit[]): FlatDocument[] {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function compareBy(mode: SortMode) {
+  switch (mode) {
+    case "match":
+      return (a: Subcontractor, b: Subcontractor) => b.match - a.match;
+    case "reviews":
+      return (a: Subcontractor, b: Subcontractor) =>
+        b.reviewCount - a.reviewCount;
+    case "rating":
+      return (a: Subcontractor, b: Subcontractor) => b.rating - a.rating;
+    case "distance":
+    default:
+      return (a: Subcontractor, b: Subcontractor) => a.distanceMi - b.distanceMi;
+  }
+}
+
 function sortContractors(
   contractors: Subcontractor[],
   mode: SortMode,
 ): Subcontractor[] {
-  const sorted = [...contractors];
-  switch (mode) {
-    case "match":
-      return sorted.sort((a, b) => b.match - a.match);
-    case "reviews":
-      return sorted.sort((a, b) => b.reviewCount - a.reviewCount);
-    case "rating":
-      return sorted.sort((a, b) => b.rating - a.rating);
-    case "distance":
-    default:
-      return sorted.sort((a, b) => a.distanceMi - b.distanceMi);
-  }
+  return [...contractors].sort(compareBy(mode));
 }
 
-function groupByTrade(contractors: Subcontractor[]): TradeGroup[] {
+/** Crews arrive pre-sorted, so each group's first crew represents it in the group order. */
+function groupByTrade(
+  contractors: Subcontractor[],
+  mode: SortMode,
+): TradeGroup[] {
   const map = new Map<string, Subcontractor[]>();
   for (const crew of contractors) {
     map.set(crew.trade, [...(map.get(crew.trade) ?? []), crew]);
   }
+  const compare = compareBy(mode);
   return Array.from(map.entries())
     .map(([trade, crews]) => ({
       trade,
@@ -104,7 +113,7 @@ function groupByTrade(contractors: Subcontractor[]): TradeGroup[] {
       topRating: Math.max(...crews.map((c) => c.rating)),
       nearestMi: Math.min(...crews.map((c) => c.distanceMi)),
     }))
-    .sort((a, b) => a.nearestMi - b.nearestMi);
+    .sort((a, b) => compare(a.crews[0], b.crews[0]));
 }
 
 function tradeSearchUrl(trade: string, city: string): string {
@@ -120,6 +129,14 @@ export function Results({ data, projectZip, onRestart }: Props) {
   const [radius, setRadius] = useState<RadiusOption>(30);
   const [sortMode, setSortMode] = useState<SortMode>("distance");
   const [openTrades, setOpenTrades] = useState<Record<string, boolean>>({});
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    },
+    [],
+  );
 
   const zipCode = projectZip ?? "85006";
   const city = cityFromAddress(data.address);
@@ -138,8 +155,8 @@ export function Results({ data, projectZip, onRestart }: Props) {
   }, [data.subcontractors, radius, sortMode]);
 
   const tradeGroups = useMemo(
-    () => groupByTrade(filteredContractors),
-    [filteredContractors],
+    () => groupByTrade(filteredContractors, sortMode),
+    [filteredContractors, sortMode],
   );
 
   const isOpen = (trade: string, index: number) =>
@@ -150,8 +167,9 @@ export function Results({ data, projectZip, onRestart }: Props) {
 
   const invite = (id: string, company: string) => {
     setInvited((prev) => ({ ...prev, [id]: true }));
-    setToast(`Invite sent to ${company}`);
-    setTimeout(() => setToast(null), 2500);
+    setToast(`Quote requested from ${company}`);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
   const toggleDoc = (name: string) => {

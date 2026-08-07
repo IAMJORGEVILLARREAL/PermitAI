@@ -8,22 +8,24 @@ import { UploadZone } from "@/components/UploadZone";
 import { SCENARIO_RESULTS } from "@/data/mockAnalysis";
 import type { AnalysisResult, DemoStep } from "@/lib/types";
 
+/** Only jurisdictions with hand-written permit and crew data are reachable. */
 const ZIP_SCENARIOS: { prefix: string; scenarioId: string }[] = [
   { prefix: "331", scenarioId: "miami-multifamily" },
   { prefix: "330", scenarioId: "miami-multifamily" },
-  { prefix: "333", scenarioId: "miami-multifamily" },
-  { prefix: "787", scenarioId: "austin-restaurant" },
-  { prefix: "802", scenarioId: "denver-adu" },
+  { prefix: "332", scenarioId: "miami-multifamily" },
+  { prefix: "850", scenarioId: "phoenix-ti" },
+  { prefix: "852", scenarioId: "phoenix-ti" },
 ];
 
 const FALLBACK_SCENARIO = "phoenix-ti";
 const FALLBACK_ZIP = "85006";
 
 const FILENAME_SCENARIOS: { match: RegExp; scenarioId: string }[] = [
-  { match: /408|miami|brickell|architectural/i, scenarioId: "miami-multifamily" },
-  { match: /austin|kitchen|restaurant/i, scenarioId: "austin-restaurant" },
-  { match: /denver|adu|sloan/i, scenarioId: "denver-adu" },
-  { match: /phoenix|culver/i, scenarioId: "phoenix-ti" },
+  {
+    match: /408|miami|brickell|architectural/i,
+    scenarioId: "miami-multifamily",
+  },
+  { match: /phoenix|culver|tenant|ti\b/i, scenarioId: "phoenix-ti" },
 ];
 
 function scenarioForZip(zip: string): string {
