@@ -1,0 +1,842 @@
+// BuildScope AI — data model
+//
+// SQLite for local development. Every model here maps to an entity in PRD §9.1
+// or to the regulatory rule graph in §8.3. SQLite has no native enum support,
+// so status fields are strings constrained by the unions in src/lib/domain.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/* ==========================================================================
+   Identity & tenancy
+   ========================================================================== */
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  /// GC | SUB | PLATFORM
+  type      String
+  /// GC: PRO | BUSINESS | ENTERPRISE — Sub: SUB_FREE | SUB_PRO
+  plan      String   @default("PRO")
+  billingEmail String?
+  /// Enterprise white-label asset
+  logoUrl   String?
+  defaultJurisdictionId String?
+  createdAt DateTime @default(now())
+
+  users           User[]
+  projects        Project[]
+  subProfile      SubcontractorProfile?
+  contractsAsGc   Contract[]            @relation("GcContracts")
+  contractsAsSub  Contract[]            @relation("SubContracts")
+  auditEvents     AuditEvent[]
+  defaultJurisdiction Jurisdiction? @relation(fields: [defaultJurisdictionId], references: [id])
+
+  @@index([type])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  orgId        String
+  email        String   @unique
+  name         String
+  passwordHash String
+  /// GC_ADMIN | GC_PM | SUB_OWNER | SUB_ESTIMATOR | PLATFORM_ADMIN
+  role         String
+  phone        String?
+  title        String?
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  sessions  Session[]
+  notifications Notification[]
+  messages  Message[]
+  acknowledgements PermitAcknowledgement[]
+  auditEvents AuditEvent[]
+  createdProjects Project[] @relation("ProjectCreator")
+  reviewsAuthored PerformanceReview[] @relation("ReviewAuthor")
+  detectionReviews Detection[] @relation("DetectionReviewer")
+
+  @@index([orgId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/* ==========================================================================
+   Regulatory rule graph (PRD §8.3)
+   Modeled relationally, but the shape is the graph: ScopeTag -TRIGGERS->
+   Permit -GOVERNED_BY-> CodeSection -ADOPTED_BY-> Jurisdiction.
+   ========================================================================== */
+
+model Jurisdiction {
+  id       String  @id @default(cuid())
+  name     String
+  /// MUNICIPAL | COUNTY | STATE | FEDERAL
+  type     String
+  state    String
+  /// Launch metro grouping: PHX | DFW | ATL
+  metro    String?
+  parentId String?
+  /// Public permit portal
+  portalUrl String?
+
+  parent   Jurisdiction?  @relation("JurisdictionParent", fields: [parentId], references: [id])
+  children Jurisdiction[] @relation("JurisdictionParent")
+
+  codeSections CodeSection[]
+  permits      Permit[]
+  ruleEdges    RuleEdge[]
+  ruleVersions RuleSetVersion[]
+  projects     Project[]
+  codeChanges  CodeChangeAlert[]
+  orgs         Organization[]
+
+  @@index([metro])
+}
+
+model CodeSection {
+  id             String   @id @default(cuid())
+  jurisdictionId String
+  /// Citation as printed, e.g. "IBC 903.2.1" or "PCC 2018 §36-4"
+  citation       String
+  title          String
+  text           String
+  version        String
+  effectiveDate  DateTime
+  /// Direct link to the adopted section — FR-11 requires this to be real
+  url            String
+
+  jurisdiction Jurisdiction        @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  permits      PermitCodeSection[]
+  changes      CodeChangeAlert[]
+
+  @@index([jurisdictionId])
+  @@unique([jurisdictionId, citation, version])
+}
+
+model Permit {
+  id                String  @id @default(cuid())
+  jurisdictionId    String
+  name              String
+  issuingAuthority  String
+  /// OVER_THE_COUNTER | PLAN_REVIEW | EXPEDITED | SELF_CERT
+  reviewType        String
+  description       String
+  estFeeLow         Int
+  estFeeHigh        Int
+  estTimelineDaysLow  Int
+  estTimelineDaysHigh Int
+  /// Trade permit issued to the performing sub rather than the GC
+  isTradePermit     Boolean @default(false)
+
+  jurisdiction Jurisdiction        @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  codeSections PermitCodeSection[]
+  ruleEdges    RuleEdge[]
+  requirements PermitRequirement[]
+
+  @@index([jurisdictionId])
+}
+
+model PermitCodeSection {
+  permitId      String
+  codeSectionId String
+
+  permit      Permit      @relation(fields: [permitId], references: [id], onDelete: Cascade)
+  codeSection CodeSection @relation(fields: [codeSectionId], references: [id], onDelete: Cascade)
+
+  @@id([permitId, codeSectionId])
+}
+
+model ScopeTag {
+  id       String @id @default(cuid())
+  /// Machine key, e.g. "electrical.service_upgrade"
+  key      String @unique
+  name     String
+  /// STRUCTURAL | MEP | ARCHITECTURAL | CIVIL | FIRE | SITE
+  category String
+  /// MasterFormat division, e.g. "26"
+  division String
+  description String?
+
+  ruleEdges   RuleEdge[]
+  detections  Detection[]
+  lineItems   ScopeLineItem[]
+  requirements PermitRequirement[]
+  subTrades   SubTrade[]
+
+  @@index([division])
+}
+
+/// ScopeTag -[:TRIGGERS {condition}]-> Permit, scoped to a jurisdiction and
+/// a rule set version so every output can be replayed exactly (FR-11).
+model RuleEdge {
+  id             String   @id @default(cuid())
+  scopeTagId     String
+  permitId       String
+  jurisdictionId String
+  /// JSON predicate evaluated against project facts, e.g.
+  /// {"valuationMin":50000,"workTypeIn":["ALTERATION"]}
+  condition      String   @default("{}")
+  ruleVersion    String
+  effectiveDate  DateTime
+  retiredAt      DateTime?
+  notes          String?
+
+  scopeTag     ScopeTag     @relation(fields: [scopeTagId], references: [id], onDelete: Cascade)
+  permit       Permit       @relation(fields: [permitId], references: [id], onDelete: Cascade)
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+
+  @@index([jurisdictionId, scopeTagId])
+}
+
+model RuleSetVersion {
+  id             String   @id @default(cuid())
+  jurisdictionId String
+  version        String
+  publishedAt    DateTime
+  notes          String?
+  /// Only one version per jurisdiction is live at a time
+  isCurrent      Boolean  @default(false)
+
+  jurisdiction Jurisdiction @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+
+  @@unique([jurisdictionId, version])
+}
+
+/* ==========================================================================
+   Projects & plan sets
+   ========================================================================== */
+
+model Project {
+  id             String   @id @default(cuid())
+  orgId          String
+  createdById    String
+  name           String
+  addressLine    String
+  city           String
+  state          String
+  zip            String
+  lat            Float?
+  lng            Float?
+  jurisdictionId String?
+  valuation      Int?
+  /// IBC Chapter 3 occupancy classification, e.g. "B"
+  occupancyClass String?
+  /// I-A through V-B
+  constructionType String?
+  /// NEW | ALTERATION | ADDITION | CHANGE_OF_USE
+  workType       String?
+  /// INTAKE | PROCESSING | SCOPING | BIDDING | AWARDED | IN_PROGRESS | CLOSEOUT | COMPLETE
+  stage          String   @default("INTAKE")
+  healthScore    Int      @default(100)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  org          Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdBy    User          @relation("ProjectCreator", fields: [createdById], references: [id])
+  jurisdiction Jurisdiction? @relation(fields: [jurisdictionId], references: [id])
+
+  planSets       PlanSet[]
+  overlays       GeoOverlay[]
+  scopePackages  ScopePackage[]
+  requirements   PermitRequirement[]
+  contracts      Contract[]
+  reviews        PerformanceReview[]
+  codeImpacts    CodeChangeImpact[]
+
+  @@index([orgId, stage])
+}
+
+/// FR-07 geospatial overlay results
+model GeoOverlay {
+  id        String @id @default(cuid())
+  projectId String
+  /// FLOOD | HISTORIC | WETLAND | COASTAL | ZONING
+  kind      String
+  value     String
+  detail    String?
+  source    String
+  url       String?
+  /// Whether this overlay adds permit or review burden
+  isTrigger Boolean @default(false)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model PlanSet {
+  id        String   @id @default(cuid())
+  projectId String
+  version   Int      @default(1)
+  /// UPLOADED | CLASSIFYING | DETECTING | AGGREGATING | READY | FAILED
+  status    String   @default("UPLOADED")
+  statusDetail String?
+  progress  Float    @default(0)
+  createdAt DateTime @default(now())
+  readyAt   DateTime?
+
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([projectId])
+}
+
+model Document {
+  id         String @id @default(cuid())
+  planSetId  String
+  filename   String
+  storageKey String
+  mimeType   String
+  sizeBytes  Int
+  pageCount  Int    @default(0)
+
+  planSet PlanSet @relation(fields: [planSetId], references: [id], onDelete: Cascade)
+  sheets  Sheet[]
+
+  @@index([planSetId])
+}
+
+model Sheet {
+  id         String  @id @default(cuid())
+  documentId String
+  pageIndex  Int
+  /// Extracted sheet number, e.g. "A1.01"
+  sheetNumber String?
+  title      String?
+  /// ARCHITECTURAL | STRUCTURAL | CIVIL | MEP | TITLE | DETAIL | SCHEDULE | UNRECOGNIZED
+  classification String @default("UNRECOGNIZED")
+  classConfidence Float @default(0)
+  /// Full OCR text, searchable (FR-03)
+  ocrText    String?
+  hasHandwriting Boolean @default(false)
+  widthPt    Float   @default(0)
+  heightPt   Float   @default(0)
+  /// Rendered raster for the plan viewer
+  renderKey  String?
+
+  document   Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  detections Detection[]
+  packages   ScopePackageSheet[]
+
+  @@index([documentId])
+  @@unique([documentId, pageIndex])
+}
+
+/// FR-04: every detection is a structured object with geometry and confidence,
+/// and stays traceable to its pixel location on the sheet (NFR-01).
+model Detection {
+  id         String  @id @default(cuid())
+  sheetId    String
+  scopeTagId String?
+  /// SYMBOL | TEXT_NOTE | SCHEDULE_ROW | DIMENSION
+  kind       String  @default("SYMBOL")
+  /// e.g. "door", "electrical_panel", "column"
+  type       String
+  label      String?
+  /// Normalized 0–1 bounding box relative to the sheet
+  x          Float
+  y          Float
+  w          Float
+  h          Float
+  confidence Float
+  /// SUGGESTED | CONFIRMED | REJECTED
+  status     String  @default("SUGGESTED")
+  quantity   Float?
+  unit       String?
+  sourceText String?
+  reviewedById String?
+  reviewedAt DateTime?
+
+  sheet      Sheet     @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+  scopeTag   ScopeTag? @relation(fields: [scopeTagId], references: [id])
+  reviewedBy User?     @relation("DetectionReviewer", fields: [reviewedById], references: [id])
+  lineItems  LineItemDetection[]
+
+  @@index([sheetId, status])
+}
+
+/* ==========================================================================
+   Scope packages & bidding
+   ========================================================================== */
+
+model ScopePackage {
+  id          String   @id @default(cuid())
+  projectId   String
+  /// MasterFormat division, e.g. "26"
+  division    String
+  title       String
+  summary     String?
+  /// DRAFT | POSTED | BIDDING | AWARDED | COMPLETED | CANCELLED
+  status      String   @default("DRAFT")
+  estValueLow  Int?
+  estValueHigh Int?
+  confidence  Float    @default(0)
+  notes       String?
+  bidDeadline DateTime?
+  preferredStart DateTime?
+  createdAt   DateTime @default(now())
+  postedAt    DateTime?
+  awardedAt   DateTime?
+
+  project     Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  lineItems   ScopeLineItem[]
+  sheets      ScopePackageSheet[]
+  invitations BidInvitation[]
+  bids        Bid[]
+  contract    Contract?
+  threads     MessageThread[]
+
+  @@index([projectId, status])
+}
+
+model ScopeLineItem {
+  id             String  @id @default(cuid())
+  scopePackageId String
+  scopeTagId     String?
+  description    String
+  quantity       Float
+  unit           String
+  confidence     Float   @default(0)
+  /// SUGGESTED | CONFIRMED | REJECTED | MANUAL
+  status         String  @default("SUGGESTED")
+  /// Set when a GC overrides the machine quantity — keeps the original honest
+  originalQuantity Float?
+  sortOrder      Int     @default(0)
+
+  scopePackage ScopePackage        @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  scopeTag     ScopeTag?           @relation(fields: [scopeTagId], references: [id])
+  detections   LineItemDetection[]
+
+  @@index([scopePackageId])
+}
+
+/// Grounding link: which detections produced which quantity (NFR-01 "show me").
+model LineItemDetection {
+  lineItemId  String
+  detectionId String
+
+  lineItem  ScopeLineItem @relation(fields: [lineItemId], references: [id], onDelete: Cascade)
+  detection Detection     @relation(fields: [detectionId], references: [id], onDelete: Cascade)
+
+  @@id([lineItemId, detectionId])
+}
+
+model ScopePackageSheet {
+  scopePackageId String
+  sheetId        String
+
+  scopePackage ScopePackage @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  sheet        Sheet        @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+
+  @@id([scopePackageId, sheetId])
+}
+
+/* ==========================================================================
+   Subcontractor supply side
+   ========================================================================== */
+
+model SubcontractorProfile {
+  id            String  @id @default(cuid())
+  orgId         String  @unique
+  legalName     String
+  ein           String?
+  principalName String
+  phone         String?
+  website       String?
+  bio           String?
+  baseZip       String
+  baseCity      String
+  baseState     String
+  workRadiusMiles Int   @default(50)
+  /// JSON array of county names served
+  counties      String  @default("[]")
+  /// HIGH | MEDIUM | LOW | AT_CAPACITY
+  capacity      String  @default("MEDIUM")
+  compositeRating Float @default(0)
+  ratingCount   Int     @default(0)
+  projectsCompleted Int @default(0)
+  /// ACTIVE | PENDING | SUSPENDED
+  marketplaceStatus String @default("PENDING")
+  suspensionReason String?
+  createdAt     DateTime @default(now())
+
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  trades      SubTrade[]
+  licenses    License[]
+  policies    InsurancePolicy[]
+  bonding     BondingCapacity?
+  invitations BidInvitation[]
+  bids        Bid[]
+  requirements PermitRequirement[]
+  reviews     PerformanceReview[]
+  threads     MessageThread[]
+
+  @@index([marketplaceStatus])
+}
+
+model SubTrade {
+  id         String @id @default(cuid())
+  profileId  String
+  scopeTagId String?
+  division   String
+  name       String
+
+  profile  SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  scopeTag ScopeTag?            @relation(fields: [scopeTagId], references: [id])
+
+  @@index([profileId])
+  @@index([division])
+}
+
+/// FR-14: verified against the state board, re-verified monthly.
+model License {
+  id             String   @id @default(cuid())
+  profileId      String
+  state          String
+  number         String
+  classification String
+  issuedAt       DateTime?
+  expiresAt      DateTime
+  /// VERIFIED | PENDING | EXPIRED | INVALID | SUSPENDED
+  status         String   @default("PENDING")
+  lastVerifiedAt DateTime?
+  disciplinaryFlag Boolean @default(false)
+  verificationSource String?
+
+  profile SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+/// FR-15: COI parsed on upload; expiry drives a 30-day warning.
+model InsurancePolicy {
+  id            String   @id @default(cuid())
+  profileId     String
+  carrier       String
+  policyNumber  String
+  /// GENERAL_LIABILITY | WORKERS_COMP | AUTO | UMBRELLA
+  coverageType  String
+  limitEach     Int
+  limitAggregate Int
+  effectiveDate DateTime
+  expirationDate DateTime
+  namedInsured  String
+  /// VERIFIED | PENDING | EXPIRING | EXPIRED
+  status        String   @default("PENDING")
+  parseConfidence Float  @default(0)
+  documentKey   String?
+
+  profile SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model BondingCapacity {
+  id           String   @id @default(cuid())
+  profileId    String   @unique
+  suretyName   String
+  singleLimit  Int
+  aggregateLimit Int
+  verifiedAt   DateTime?
+  /// VERIFIED | PENDING | UNVERIFIED
+  status       String   @default("PENDING")
+
+  profile SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+/* ==========================================================================
+   Matching, bids, contracts
+   ========================================================================== */
+
+model BidInvitation {
+  id             String   @id @default(cuid())
+  scopePackageId String
+  profileId      String
+  matchScore     Float
+  /// JSON breakdown of the weighted score, shown to the GC for transparency
+  matchBreakdown String   @default("{}")
+  /// INVITED | VIEWED | BID | DECLINED | EXPIRED
+  status         String   @default("INVITED")
+  sentAt         DateTime @default(now())
+  viewedAt       DateTime?
+  respondedAt    DateTime?
+
+  scopePackage ScopePackage         @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  profile      SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([scopePackageId, profileId])
+  @@index([profileId, status])
+}
+
+/// FR-21: sealed until the deadline. `amount` must never be selected into a
+/// GC-facing query before ScopePackage.bidDeadline has passed.
+model Bid {
+  id             String   @id @default(cuid())
+  scopePackageId String
+  profileId      String
+  amount         Int
+  inclusions     String?
+  exclusions     String?
+  notes          String?
+  /// SUBMITTED | WITHDRAWN | AWARDED | LOST
+  status         String   @default("SUBMITTED")
+  submittedAt    DateTime @default(now())
+
+  scopePackage ScopePackage         @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  profile      SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  contract     Contract?
+
+  @@unique([scopePackageId, profileId])
+  @@index([scopePackageId, status])
+}
+
+model Contract {
+  id             String   @id @default(cuid())
+  scopePackageId String   @unique
+  bidId          String   @unique
+  projectId      String
+  gcOrgId        String
+  subOrgId       String
+  value          Int
+  /// DRAFT | SENT | SUB_SIGNED | EXECUTED | CLOSED | VOID
+  status         String   @default("DRAFT")
+  scopeExhibit   String
+  documentKey    String?
+  gcSignedAt     DateTime?
+  gcSignedBy     String?
+  subSignedAt    DateTime?
+  subSignedBy    String?
+  executedAt     DateTime?
+  closedAt       DateTime?
+  createdAt      DateTime @default(now())
+
+  scopePackage ScopePackage    @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  bid          Bid             @relation(fields: [bidId], references: [id])
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  gcOrg        Organization    @relation("GcContracts", fields: [gcOrgId], references: [id])
+  subOrg       Organization    @relation("SubContracts", fields: [subOrgId], references: [id])
+  fee          TransactionFee?
+  requirements PermitRequirement[]
+  review       PerformanceReview?
+
+  @@index([projectId])
+}
+
+/// FR-24: 4.5% of awarded value, capped at $2,000, charged to the sub.
+model TransactionFee {
+  id         String   @id @default(cuid())
+  contractId String   @unique
+  ratePct    Float    @default(4.5)
+  grossAmount Int
+  cappedAmount Int
+  /// PENDING | CHARGED | FAILED | REFUNDED
+  status     String   @default("PENDING")
+  chargedAt  DateTime?
+  reference  String?
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+}
+
+/* ==========================================================================
+   Compliance
+   ========================================================================== */
+
+model PermitRequirement {
+  id         String  @id @default(cuid())
+  projectId  String
+  permitId   String
+  contractId String?
+  responsibleProfileId String?
+  /// REQUIRED | IN_PROGRESS | OBTAINED | NOT_APPLICABLE
+  status     String  @default("REQUIRED")
+  permitNumber String?
+  obtainedAt DateTime?
+  documentKey String?
+  /// The tag that fired this requirement, for FR-11 traceability
+  triggeringScopeTagId String?
+  /// Rule set version used at evaluation time — makes the output replayable
+  ruleVersion String
+  /// JSON snapshot of citations at evaluation time
+  citations  String  @default("[]")
+  /// Set when a user flags the recommendation as wrong
+  disputedAt DateTime?
+  disputeNote String?
+  createdAt  DateTime @default(now())
+
+  project     Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  permit      Permit                @relation(fields: [permitId], references: [id])
+  contract    Contract?             @relation(fields: [contractId], references: [id])
+  responsible SubcontractorProfile? @relation(fields: [responsibleProfileId], references: [id])
+  scopeTag    ScopeTag?             @relation(fields: [triggeringScopeTagId], references: [id])
+  acknowledgements PermitAcknowledgement[]
+  codeImpacts CodeChangeImpact[]
+
+  @@index([projectId, status])
+}
+
+/// FR-27: every status change is time-stamped and immutable.
+model PermitAcknowledgement {
+  id        String   @id @default(cuid())
+  requirementId String
+  userId    String
+  status    String
+  note      String?
+  permitNumber String?
+  documentKey String?
+  createdAt DateTime @default(now())
+
+  requirement PermitRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  user        User              @relation(fields: [userId], references: [id])
+
+  @@index([requirementId])
+}
+
+/// FR-28 Code Change Radar
+model CodeChangeAlert {
+  id             String   @id @default(cuid())
+  codeSectionId  String
+  jurisdictionId String
+  summary        String
+  detail         String?
+  /// AMENDED | REPEALED | SUPERSEDED | ADOPTED
+  changeType     String
+  effectiveDate  DateTime
+  publishedAt    DateTime @default(now())
+  sourceUrl      String?
+
+  codeSection  CodeSection        @relation(fields: [codeSectionId], references: [id], onDelete: Cascade)
+  jurisdiction Jurisdiction       @relation(fields: [jurisdictionId], references: [id], onDelete: Cascade)
+  impacts      CodeChangeImpact[]
+
+  @@index([jurisdictionId])
+}
+
+model CodeChangeImpact {
+  id            String   @id @default(cuid())
+  alertId       String
+  projectId     String
+  requirementId String?
+  acknowledgedAt DateTime?
+  createdAt     DateTime @default(now())
+
+  alert       CodeChangeAlert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  requirement PermitRequirement? @relation(fields: [requirementId], references: [id])
+
+  @@index([projectId])
+}
+
+/* ==========================================================================
+   Performance, messaging, notifications, audit
+   ========================================================================== */
+
+model PerformanceReview {
+  id         String   @id @default(cuid())
+  contractId String   @unique
+  projectId  String
+  profileId  String
+  authorId   String
+  safety     Int
+  schedule   Int
+  quality    Int
+  communication Int
+  composite  Float
+  comment    String?
+  /// Subcontractor's single public response (FR-29)
+  response   String?
+  respondedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  contract Contract             @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  project  Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  profile  SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  author   User                 @relation("ReviewAuthor", fields: [authorId], references: [id])
+
+  @@index([profileId])
+}
+
+model MessageThread {
+  id             String   @id @default(cuid())
+  scopePackageId String
+  profileId      String
+  createdAt      DateTime @default(now())
+
+  scopePackage ScopePackage         @relation(fields: [scopePackageId], references: [id], onDelete: Cascade)
+  profile      SubcontractorProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@unique([scopePackageId, profileId])
+}
+
+/// FR-23: monitored for circumvention indicators.
+model Message {
+  id        String   @id @default(cuid())
+  threadId  String
+  senderId  String
+  body      String
+  flagged   Boolean  @default(false)
+  flagReason String?
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User          @relation(fields: [senderId], references: [id])
+
+  @@index([threadId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  /// BID_RECEIVED | INVITATION | DEADLINE | ACK_REQUIRED | CODE_CHANGE | VERIFICATION | AWARD
+  kind      String
+  title     String
+  body      String?
+  href      String?
+  /// LOW | NORMAL | HIGH
+  urgency   String   @default("NORMAL")
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+/// NFR-05: immutable audit log of every significant action.
+model AuditEvent {
+  id         String   @id @default(cuid())
+  orgId      String?
+  userId     String?
+  action     String
+  entityType String
+  entityId   String
+  /// JSON payload snapshot
+  data       String   @default("{}")
+  createdAt  DateTime @default(now())
+
+  org  Organization? @relation(fields: [orgId], references: [id])
+  user User?         @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([orgId, createdAt])
+}

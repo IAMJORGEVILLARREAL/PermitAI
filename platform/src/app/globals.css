@@ -1,0 +1,347 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   BuildScope — "Minimal Industrial"
+   The entire system lives in grayscale. One accent guides attention.
+   Nothing decorative. Everything engineered.
+   ========================================================================== */
+
+@theme {
+  /* --- Grayscale: the whole brand -------------------------------------- */
+  --color-carbon: #111111;
+  --color-graphite: #242424;
+  --color-steel: #5e5e5e;
+  --color-concrete: #a7a7a7;
+  --color-fog: #eaeaea;
+  --color-paper: #f8f8f6;
+  --color-white: #ffffff;
+
+  /* Hairlines. There are only two weights and both are nearly invisible. */
+  --color-hairline: #e4e4e1;
+  --color-hairline-strong: #d2d2ce;
+
+  /* --- The one accent --------------------------------------------------- */
+  /* Safety Lime. Laser levels, layout markings, CAD highlight layers.
+     Budget: 3–5% of any composition. Selection, current state, one action. */
+  --color-lime: #c7f000;
+  --color-lime-deep: #a8cc00; /* edges and hover on lime surfaces */
+  --color-lime-ink: #566b00; /* lime as legible text on paper */
+  --color-lime-wash: #f4fbd6;
+
+  /* --- Functional only. Never brand, never marketing, never large. ------ */
+  --color-alert: #b3261e;
+  --color-alert-wash: #fbeceb;
+
+  /* --- Typography ------------------------------------------------------- */
+  --font-display: var(--font-geist), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* --- Geometry: nothing is rounded ------------------------------------- */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+
+  /* --- Motion: CNC, not personality ------------------------------------- */
+  --ease-machine: cubic-bezier(0.2, 0, 0, 1);
+  --ease-snap: cubic-bezier(0.85, 0, 0.15, 1);
+  --dur-1: 100ms;
+  --dur-2: 160ms;
+  --dur-3: 240ms;
+  --dur-4: 400ms;
+}
+
+:root {
+  --shell-top: 52px;
+  --shell-side: 232px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  border-color: var(--color-hairline);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-carbon);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-lime);
+  color: var(--color-carbon);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-carbon);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+/* Display type is huge and tight. Numbers are always tabular. */
+.tnum,
+table,
+input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The mono voice: permit numbers, code refs, dimensions, revision IDs. */
+.spec {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-steel);
+}
+
+/* ==========================================================================
+   Materials — manufactured, matte, never glossy.
+   ========================================================================== */
+
+/* Anodized aluminum: directional machining grain, almost imperceptible. */
+.material-aluminum {
+  background-color: var(--color-fog);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.55) 0px,
+    rgba(255, 255, 255, 0) 1px,
+    rgba(0, 0, 0, 0.022) 2px,
+    rgba(255, 255, 255, 0) 3px
+  );
+}
+
+/* Powder-coated steel: matte dark surface with fine tooth. */
+.material-coated {
+  background-color: var(--color-carbon);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 0
+  );
+  background-size: 4px 4px;
+}
+
+/* Concrete: fine aggregate speckle. */
+.material-concrete {
+  background-color: var(--color-fog);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(0, 0, 0, 0.035) 1px,
+    transparent 0
+  );
+  background-size: 6px 6px;
+}
+
+/* Coordinate system. Used behind plan and drawing surfaces only. */
+.material-grid {
+  background-image:
+    linear-gradient(to right, var(--color-hairline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-hairline) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.material-grid-dark {
+  background-color: var(--color-carbon);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Paper grain. Fixed, 2% — you should never consciously see it. */
+.material-grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* Measurement ticks — a machined edge rule. */
+.material-ticks {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-concrete) 0 1px,
+    transparent 1px 8px
+  );
+  background-size: 8px 100%;
+  background-repeat: repeat-x;
+}
+
+/* Hatch: marks a region as unverified / machine-proposed. Never color. */
+.material-hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-hairline) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+/* ==========================================================================
+   Motion — sliding drawers, mechanical switches, hard snap points.
+   ========================================================================== */
+
+@keyframes machine-rise {
+  from {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes machine-drawer {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes machine-scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(500%);
+  }
+}
+
+@keyframes machine-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes machine-index {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 16px 0;
+  }
+}
+
+.anim-rise {
+  animation: machine-rise var(--dur-3) var(--ease-machine) both;
+}
+
+.anim-drawer {
+  animation: machine-drawer var(--dur-3) var(--ease-snap) both;
+}
+
+.anim-scan {
+  animation: machine-scan 2.2s linear infinite;
+}
+
+.anim-blink {
+  animation: machine-blink 1.2s steps(1, end) infinite;
+}
+
+/* Indeterminate work: the track indexes forward in discrete steps. */
+.anim-index {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-carbon) 0 2px,
+    transparent 2px 16px
+  );
+  background-size: 16px 100%;
+  animation: machine-index 500ms steps(4, end) infinite;
+}
+
+/* Landing: scroll reveals + plan scan line */
+.landing-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-4) var(--ease-machine),
+    transform var(--dur-4) var(--ease-machine);
+}
+
+.landing-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes machine-scan-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(min(100vw, 640px));
+  }
+}
+
+.anim-scan-x {
+  animation: machine-scan-x 3.2s var(--ease-machine) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .landing-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Scrollbars — machined, flush, no floating.
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-concrete);
+  border: 3px solid var(--color-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-steel);
+}
